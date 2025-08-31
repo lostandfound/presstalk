@@ -1,4 +1,11 @@
-# PressTalk 設計書（完全ローカル PTT）
+# PressTalk 設計書（完全ローカル PTT） — Archived
+
+この文書は初期設計の記録として保存しています。最新の構成と仕様は以下を参照してください。
+
+- Architecture Overview: `docs/architecture.md`
+- Roadmap: `docs/ROADMAP.md`
+- Usage Guide: `docs/usage.md`
+- Command Reference: `docs/commands.md`
 
 本書は、WhisperLiveKit を使わずに「押している間だけ録音 → 離したら確定 → 前面アプリに貼り付け」を完全ローカルで実現する Push‑to‑Talk（以下 PTT）ツール「PressTalk」の設計を示す。
 
@@ -173,4 +180,4 @@ presstalk/
 - `hotkey_mode = hold`（慣れ次第 toggle も選択可）
 
 ---
-本設計に基づき、まず MVP（フェーズ1）の Python 実装から着手する。必要に応じて ASR エンジンを `whisper.cpp` へ差し替え可能な抽象化を維持する。
+（以降は当初の設計内容のため、現状と差異がある場合があります）
