@@ -97,6 +97,11 @@ class Config:
             cur_list: list = []
             for raw in text.splitlines():
                 line = raw.strip()
+                if not line:
+                    continue
+                # strip inline comments (# ...)
+                if '#' in line:
+                    line = line.split('#', 1)[0].rstrip()
                 if not line or line.startswith('#'):
                     continue
                 if in_list and line.startswith('-'):
@@ -126,6 +131,20 @@ class Config:
                         key = k
                         in_list = True
                         cur_list = []
+                        continue
+                    # bracket list: [a, b, c]
+                    if v.startswith('[') and v.endswith(']'):
+                        items = [s.strip() for s in v[1:-1].split(',') if s.strip()]
+                        coerced = []
+                        for item in items:
+                            if item.lower() in ('true', 'false'):
+                                coerced.append(item.lower() == 'true')
+                            else:
+                                try:
+                                    coerced.append(int(item))
+                                except Exception:
+                                    coerced.append(item)
+                        data[k] = coerced
                         continue
                     # best-effort typing
                     if v.lower() in ('true', 'false'):
@@ -158,10 +177,8 @@ class Config:
         if path:
             found = try_read(path)
             return found or {}
-        # search defaults
+        # search defaults (do not auto-read CWD here; CLI may pass it explicitly)
         candidates = []
-        # project-local
-        candidates.append(os.path.join(os.getcwd(), "presstalk.yaml"))
         # XDG
         xdg = os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
         candidates.append(os.path.join(xdg, "presstalk", "config.yaml"))

@@ -1,13 +1,27 @@
+# PressTalk default configuration (auto‑loaded)
+# Precedence: CLI > environment variables > this YAML > built‑ins
+
+# ASR language code (e.g., ja, en)
 language: ja
+
+# Faster‑Whisper model size/name (e.g., tiny, base, small, medium)
 model: small
-sample_rate: 16000
-channels: 1
-prebuffer_ms: 200
-min_capture_ms: 1800
-mode: hold      # hold or toggle
-hotkey: ctrl    # ctrl/cmd/alt/space or key
-paste_guard: true
-paste_blocklist:
+
+# Audio capture (PCM)
+sample_rate: 16000   # Hz
+channels: 1          # mono=1, stereo=2 (mono recommended)
+
+# Capture behavior tuning (milliseconds)
+prebuffer_ms: 200    # push this much buffered audio at press start (pre‑roll)
+min_capture_ms: 1800 # enforce minimum capture length to avoid short taps
+
+# PTT interaction
+mode: hold           # hold = press to hold, toggle = tap to start/stop
+hotkey: ctrl         # ctrl/cmd/alt/space or character key (global hotkey)
+
+# Paste behavior (macOS)
+paste_guard: true    # if true, skip paste when frontmost app matches blocklist
+paste_blocklist:     # names or bundle IDs (case‑insensitive substring match)
   - Terminal
   - iTerm2
   - com.apple.Terminal

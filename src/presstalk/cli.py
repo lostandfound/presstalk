@@ -139,7 +139,11 @@ def main():
         return 0
 
     if args.cmd == "simulate":
-        cfg = Config(config_path=args.config)
+        # default to local YAML if present
+        cfg_path = args.config
+        if not cfg_path and os.path.isfile("presstalk.yaml"):
+            cfg_path = "presstalk.yaml"
+        cfg = Config(config_path=cfg_path)
         bps = cfg.bytes_per_second
         pre_bytes = int(bps * (cfg.prebuffer_ms / 1000.0))
         ring = RingBuffer(max(1, pre_bytes or 1))
@@ -157,7 +161,11 @@ def main():
         return 0
 
     if args.cmd == "run":
-        cfg = Config(config_path=args.config)
+        # default to local YAML if present
+        cfg_path = args.config
+        if not cfg_path and os.path.isfile("presstalk.yaml"):
+            cfg_path = "presstalk.yaml"
+        cfg = Config(config_path=cfg_path)
         if args.language:
             cfg.language = args.language
         if args.model:
