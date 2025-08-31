@@ -1,6 +1,7 @@
 import os
 import subprocess
 from typing import Callable, Optional, Tuple, Dict, Sequence, Union
+from .paste_common import PasteGuard
 
 
 def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = None) -> Dict[str, str]:
@@ -45,26 +46,17 @@ def insert_text(
         return True
 
     # Paste guard: optionally block paste when frontmost app matches blocklist (e.g., Terminal)
-    guard = guard_enabled if guard_enabled is not None else (os.getenv("PT_PASTE_GUARD", "1") not in ("0", "false", "False"))
-    if guard:
-        try:
-            fg = frontmost_getter() if frontmost_getter else _get_frontmost_app()
-        except Exception:
-            fg = {}
-        if fg:
-            name = (fg.get("name") or "").lower()
-            bid = (fg.get("bundle_id") or "").lower()
-            if blocklist is None:
-                block_env = os.getenv("PT_PASTE_BLOCKLIST", "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2")
-                blocks = [s.strip().lower() for s in block_env.split(",") if s.strip()]
-            else:
-                if isinstance(blocklist, str):
-                    blocks = [s.strip().lower() for s in blocklist.split(",") if s.strip()]
-                else:
-                    blocks = [str(s).strip().lower() for s in blocklist if str(s).strip()]
-            targets = [name, bid]
-            if any(b and any(t.find(b) != -1 for t in targets if t) for b in blocks):
-                return False
+    try:
+        fg = frontmost_getter() if frontmost_getter else _get_frontmost_app()
+    except Exception:
+        fg = {}
+    if PasteGuard.should_block(
+        fg,
+        guard_enabled=guard_enabled,
+        blocklist=blocklist,
+        default_blocklist="Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2",
+    ):
+        return False
     # copy to clipboard
     if clipboard_fn is not None:
         try:
