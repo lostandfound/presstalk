@@ -7,15 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0-beta.1] - 2025-09-01
+
 ### Added
-- Windows platform support (in progress)
-- LICENSE file with MIT License
-- Single source of truth for version number (`__version__`)
-- CHANGELOG.md for tracking releases
-- Versioning guidelines in docs/dev/VERSIONING.md
+- **Cross-platform support**: Windows 10/11 compatibility alongside macOS
+- Windows-specific paste implementation using `clip.exe` and `Ctrl+V`
+- Platform-specific paste guard configurations
+  - macOS: Terminal, iTerm2, com.apple.Terminal, com.googlecode.iterm2
+  - Windows: cmd.exe, powershell.exe, pwsh.exe, WindowsTerminal.exe, wt.exe, conhost.exe
+- Unified cross-platform API with automatic platform detection
+- Windows-specific documentation in usage guides
+- Platform classifier for Windows in packaging metadata
 
 ### Changed
-- Version is now imported from `__init__.py` instead of hardcoded in CLI
+- Restructured paste functionality with platform abstraction layer
+- Configuration defaults now adapt to operating system
+- Documentation updated to reflect cross-platform capabilities
+
+### Technical Implementation
+- Added `src/presstalk/paste.py` for platform dispatch
+- Added `src/presstalk/paste_windows.py` for Windows implementation
+- Enhanced `src/presstalk/config.py` with OS-specific defaults
+- Updated architecture documentation for platform support
+
+### Notes
+- This is a beta release for Windows platform testing
+- All existing macOS functionality remains unchanged
+- Windows implementation uses native Windows APIs and tools
 
 ## [0.0.1] - 2025-08-31
 
