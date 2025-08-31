@@ -61,7 +61,7 @@ Tips:
   - `make run-anywhere`
 
 ## Configuration (YAML)
-- Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, or `~/.presstalk.yaml`.
+- Auto-discovery: `presstalk.yaml` in the repository root (editable installs).
 - Override path: `uv run presstalk run --config path/to/config.yaml`.
 - Example:
 ```yaml

@@ -29,7 +29,7 @@ brew install portaudio
 - アクセシビリティ（貼り付け用）: システム設定 → プライバシーとセキュリティ → アクセシビリティ で Terminal を有効化。
 
 ## 4) 設定（YAML）
-- 自動検出: `./presstalk.yaml`、`$XDG_CONFIG_HOME/presstalk/config.yaml`、`~/.presstalk.yaml`
+- 自動検出: リポジトリルートの `presstalk.yaml`（editable インストール時）
 - 明示指定: `uv run presstalk run --config path/to/config.yaml`
 - 例:
 ```yaml
