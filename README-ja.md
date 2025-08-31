@@ -11,15 +11,25 @@
 - ロードマップ: docs/ROADMAP.md
 
 ## クイックスタート
+
+まずクローン:
+```bash
+git clone https://github.com/lostandfound/presstalk.git
+cd presstalk
+```
+
+方法A（推奨・No‑CD 一発セットアップ）:
+```bash
+make bootstrap
+# 以後どこからでも
+presstalk
+```
+
+方法B（プロジェクト内 venv）:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-
-# 動作確認（疑似）
-uv run presstalk simulate
-
-# 実行（既定＝グローバルホットキー）
-uv run presstalk run
+uv run presstalk
 ```
 Tips:
 - 初回は macOS のマイク/アクセシビリティ許可が必要です。
@@ -38,6 +48,15 @@ Tips:
 - `make simulate CHUNKS="hello world" DELAY=40`
 - `make test` / `make test-file FILE=tests/test_controller.py`
 - `make lint` / `make format` / `make typecheck`
+
+## リポジトリに移動せずに起動する（No‑CD Setup）
+- 一発セットアップ（uv/pipx/venv を自動判別）:
+  - `make bootstrap`
+  - 以後はどこからでも: `presstalk run`（または `pt` エイリアス）
+- グローバルインストール（uv）:
+  - `make install-global` 実行後、`~/.local/bin` を PATH に追加（`make path-zsh` か `make path-bash`）
+- いま即起動（インストール不要・リポジトリから実行）:
+  - `make run-anywhere`
 
 ## 依存関係
 - Python 3.9+（macOS 13+ 推奨）

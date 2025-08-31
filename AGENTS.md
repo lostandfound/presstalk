@@ -34,4 +34,4 @@
 
 ## Security & Configuration Tips
 - macOS permissions required: Microphone and Accessibility (for paste/hotkey). See `docs/usage.md`.
-- Configuration: YAML auto-discovery (`./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, `~/.presstalk.yaml`). CLI overrides file; env vars still supported (`PT_LANGUAGE`, etc.).
+- Configuration: YAML at repository root (`presstalk.yaml`) is auto-used for editable installs; CLI `--config` overrides; env vars still supported (`PT_LANGUAGE`, etc.).

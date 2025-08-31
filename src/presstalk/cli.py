@@ -140,11 +140,23 @@ def main():
         print("presstalk 0.0.1")
         return 0
 
+    # Default behavior: no subcommand means "run"
+    if not args.cmd:
+        # Reparse with implicit 'run' so subparser defaults are populated
+        args = parser.parse_args(["run"])
+
     if args.cmd == "simulate":
-        # default to local YAML if present
+        # default to repository-root YAML if present (editable installs)
         cfg_path = args.config
-        if not cfg_path and os.path.isfile("presstalk.yaml"):
-            cfg_path = "presstalk.yaml"
+        if not cfg_path:
+            try:
+                pkg_dir = os.path.dirname(__file__)            # src/presstalk
+                repo_root = os.path.abspath(os.path.join(pkg_dir, "..", ".."))
+                candidate = os.path.join(repo_root, "presstalk.yaml")
+                if os.path.isfile(candidate):
+                    cfg_path = candidate
+            except Exception:
+                pass
         cfg = Config(config_path=cfg_path)
         # banner
         if getattr(cfg, 'show_logo', True):
@@ -166,10 +178,17 @@ def main():
         return 0
 
     if args.cmd == "run":
-        # default to local YAML if present
+        # default to repository-root YAML if present (editable installs)
         cfg_path = args.config
-        if not cfg_path and os.path.isfile("presstalk.yaml"):
-            cfg_path = "presstalk.yaml"
+        if not cfg_path:
+            try:
+                pkg_dir = os.path.dirname(__file__)
+                repo_root = os.path.abspath(os.path.join(pkg_dir, "..", ".."))
+                candidate = os.path.join(repo_root, "presstalk.yaml")
+                if os.path.isfile(candidate):
+                    cfg_path = candidate
+            except Exception:
+                pass
         cfg = Config(config_path=cfg_path)
         # banner
         if getattr(cfg, 'show_logo', True):

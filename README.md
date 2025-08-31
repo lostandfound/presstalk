@@ -2,7 +2,7 @@
 
 Language: [English](README.md) | [日本語](README-ja.md)
 
-Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely locally (no server required).
+Local voice input tool using push‑to‑talk (PTT). Hold a control key to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your Mac (no server).
 
 - Architecture: docs/architecture.md
 - Roadmap: docs/ROADMAP.md
@@ -13,19 +13,36 @@ Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely lo
 
 ## Quick Start
 
+Clone first:
+```bash
+git clone https://github.com/lostandfound/presstalk.git
+cd presstalk
+```
+
+Option A — No-CD (recommended, 1-step setup):
+```bash
+make bootstrap
+# then from anywhere
+presstalk
+```
+
+Option B — Project-local venv:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-
-# Smoke test (no extra permissions needed)
-uv run presstalk simulate
-
-# Run (global hotkey is default)
-uv run presstalk run
+uv run presstalk
 ```
 Tips:
 - On first run, macOS prompts for Microphone and Accessibility permissions.
-- Hold the chosen key (e.g., `ctrl`) to record; release to finalize and paste.
+- Hold the chosen key (default `ctrl`) to record. When you release it, PressTalk transcribes locally and pastes the text at your current cursor position in the active app.
+- Paste guard is enabled by default: paste is skipped when Terminal/iTerm is frontmost (configurable).
+  - Tip: `presstalk` with no args equals `presstalk run`.
+
+## What It Does
+- Voice input for any text field: record while holding a key, paste on release.
+- Global hotkey by default (`ctrl`), configurable via YAML or CLI.
+- Offline ASR with faster‑whisper; audio never leaves your device.
+- Paste guard avoids Terminal/iTerm by default; customize via YAML.
 
 ## Makefile Shortcuts
 - `make venv && source .venv/bin/activate && make install`
@@ -34,8 +51,17 @@ Tips:
 - `make test` / `make test-file FILE=tests/test_controller.py`
 - `make lint` / `make format` / `make typecheck`
 
+## No-CD Setup (Run from anywhere)
+- One-shot setup (auto-detects uv/pipx/venv):
+  - `make bootstrap`
+  - Then run globally: `presstalk run` (or `pt` if alias was added)
+- Quick global install (uv):
+  - `make install-global` and ensure `~/.local/bin` is in PATH (`make path-zsh` or `make path-bash`)
+- Run now without install (from repo):
+  - `make run-anywhere`
+
 ## Configuration (YAML)
-- Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, or `~/.presstalk.yaml`.
+- Auto-discovery: `presstalk.yaml` in the repository root (editable installs).
 - Override path: `uv run presstalk run --config path/to/config.yaml`.
 - Example:
 ```yaml

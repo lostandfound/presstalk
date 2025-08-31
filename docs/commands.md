@@ -5,6 +5,7 @@
 - Subcommands: `run`, `simulate`
 
 ## run — Local PTT (default: global hotkey)
+(Note: `presstalk` with no args is equivalent to `presstalk run`.)
 - `--config <path>`: YAML path. Auto: `./presstalk.yaml` if present.
 - `--mode <hold|toggle>`: PTT mode. Defaults to YAML or `hold`.
 - `--console`: Use console input instead of global hotkey.
@@ -29,7 +30,7 @@ Examples
 - `uv run presstalk simulate --chunks hello world --delay-ms 40`
 
 ## Configuration (YAML / Env)
-- YAML auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, `~/.presstalk.yaml`.
+- YAML auto-discovery: `presstalk.yaml` in the repository root (editable installs).
 - Keys: `language`, `model`, `sample_rate`, `channels`, `prebuffer_ms`, `min_capture_ms`, `mode`, `hotkey`, `paste_guard`, `paste_blocklist`.
 - Env vars (optional): `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL`, `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`.
 - Precedence: CLI > Env > YAML > defaults.

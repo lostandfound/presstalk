@@ -27,7 +27,7 @@ Then rerun the install command.
 - Accessibility: enable your terminal app for global hotkeys and paste.
 
 ## 4) Configuration (YAML)
-- Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, `~/.presstalk.yaml`
+- Auto-discovery: `presstalk.yaml` in the repository root (editable installs).
 - Override path: `uv run presstalk run --config path/to/config.yaml`
 - Example
 ```yaml
