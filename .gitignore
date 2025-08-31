@@ -1,0 +1,14 @@
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# OS
+.DS_Store
+
+# Virtual envs
+.venv/
