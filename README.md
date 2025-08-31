@@ -21,6 +21,21 @@ Tips:
 - On first run, macOS prompts for Microphone and Accessibility permissions.
 - Hold the chosen key (e.g., `ctrl`) to record; release to finalize and paste.
 
+## Configuration (YAML)
+- Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, or `~/.presstalk.yaml`.
+- Override path: `uv run presstalk run --config path/to/config.yaml`.
+- Example:
+```yaml
+language: ja
+model: small
+sample_rate: 16000
+channels: 1
+prebuffer_ms: 200
+min_capture_ms: 1800
+mode: hold      # hold or toggle
+hotkey: ctrl    # ctrl/cmd/alt/space or key
+```
+
 ### Console Input mode (optional)
 
 ```bash

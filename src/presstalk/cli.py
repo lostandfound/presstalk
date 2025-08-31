@@ -115,13 +115,15 @@ def main():
     sub = parser.add_subparsers(dest="cmd")
 
     sim = sub.add_parser("simulate", help="Run a simulated press using dummy capture/engine")
+    sim.add_argument("--config", help="Path to YAML config (presstalk.yaml)")
     sim.add_argument("--chunks", nargs="*", default=["aa", "bb", "cc"], help="List of ASCII chunks to feed (default: aa bb cc)")
     sim.add_argument("--delay-ms", type=int, default=50, help="Delay between chunks (ms)")
 
     runp = sub.add_parser("run", help="Run local PTT (global hotkey by default)")
-    runp.add_argument("--mode", choices=["hold", "toggle"], default="hold", help="PTT mode")
+    runp.add_argument("--config", help="Path to YAML config (presstalk.yaml)")
+    runp.add_argument("--mode", choices=["hold", "toggle"], default=None, help="PTT mode")
     runp.add_argument("--console", action="store_true", help="Use console input instead of global hotkey")
-    runp.add_argument("--hotkey", default="ctrl", help="Hotkey key name (ctrl/cmd/alt/space or character)")
+    runp.add_argument("--hotkey", default=None, help="Hotkey key name (ctrl/cmd/alt/space or character)")
     runp.add_argument("--log-level", choices=["QUIET", "INFO", "DEBUG"], default="INFO", help="Logging level")
     runp.add_argument("--language", default=None, help="Override language (e.g., ja)")
     runp.add_argument("--model", default=None, help="Override model (e.g., small)")
@@ -134,7 +136,7 @@ def main():
         return 0
 
     if args.cmd == "simulate":
-        cfg = Config()
+        cfg = Config(config_path=args.config)
         bps = cfg.bytes_per_second
         pre_bytes = int(bps * (cfg.prebuffer_ms / 1000.0))
         ring = RingBuffer(max(1, pre_bytes or 1))
@@ -152,7 +154,7 @@ def main():
         return 0
 
     if args.cmd == "run":
-        cfg = Config()
+        cfg = Config(config_path=args.config)
         if args.language:
             cfg.language = args.language
         if args.model:
@@ -161,6 +163,9 @@ def main():
             cfg.prebuffer_ms = int(args.prebuffer_ms)
         if args.min_capture_ms is not None:
             cfg.min_capture_ms = int(args.min_capture_ms)
+        # compute effective mode/hotkey from CLI or YAML (then defaults)
+        effective_mode = args.mode or getattr(cfg, 'mode', None) or 'hold'
+        effective_hotkey = args.hotkey or getattr(cfg, 'hotkey', None) or 'ctrl'
 
         try:
             orch = _build_run_orchestrator(cfg)
@@ -180,9 +185,9 @@ def main():
                 print(f"Global hotkey not available: {e}")
                 return 1
             orch = _StatusOrch(orch)
-            runner = GlobalHotkeyRunner(orch, mode=args.mode, key_name=args.hotkey)
+            runner = GlobalHotkeyRunner(orch, mode=effective_mode, key_name=effective_hotkey)
             runner.start()
-            get_logger().info(f"Global hotkey active (default): '{args.hotkey}' in {args.mode} mode. Ctrl+C to exit.")
+            get_logger().info(f"Global hotkey active (default): '{effective_hotkey}' in {effective_mode} mode. Ctrl+C to exit.")
             try:
                 while True:
                     time.sleep(0.2)
@@ -193,10 +198,10 @@ def main():
         else:
             from .hotkey import HotkeyHandler
             orch = _StatusOrch(orch)
-            hk = HotkeyHandler(orch, mode=args.mode)
+            hk = HotkeyHandler(orch, mode=effective_mode)
 
             get_logger().info("PressTalk running (console mode). Commands:")
-            if args.mode == 'hold':
+            if effective_mode == 'hold':
                 get_logger().info("- Type 'p'+Enter to press, 'r'+Enter to release, 'q'+Enter to quit")
             else:
                 get_logger().info("- Type 't'+Enter to toggle, 'q'+Enter to quit")

@@ -13,6 +13,7 @@ dependencies = [
     "faster-whisper",
     "numpy",
     "sounddevice",
+    "PyYAML",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

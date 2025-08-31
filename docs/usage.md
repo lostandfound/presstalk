@@ -28,6 +28,21 @@ brew install portaudio
 - マイク: 初回録音開始時に許可ダイアログ。拒否した場合は、システム設定 → プライバシーとセキュリティ → マイク で Terminal を許可。
 - アクセシビリティ（貼り付け用）: システム設定 → プライバシーとセキュリティ → アクセシビリティ で Terminal を有効化。
 
+## 4) 設定（YAML）
+- 自動検出: `./presstalk.yaml`、`$XDG_CONFIG_HOME/presstalk/config.yaml`、`~/.presstalk.yaml`
+- 明示指定: `uv run presstalk run --config path/to/config.yaml`
+- 例:
+```yaml
+language: ja
+model: small
+sample_rate: 16000
+channels: 1
+prebuffer_ms: 200
+min_capture_ms: 1800
+mode: hold
+hotkey: ctrl
+```
+
 ## 4) 動作確認（ダミー）
 実デバイスを使わず、疑似チャンクで流れを確認:
 ```bash

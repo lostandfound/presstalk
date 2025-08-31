@@ -1,24 +1,100 @@
 import os
 from dataclasses import dataclass
+from typing import Optional, Any, Dict
+
+try:
+    import yaml  # type: ignore
+except Exception:  # fallback if PyYAML missing
+    yaml = None
 
 
 @dataclass
 class Config:
-    language: str = None
-    sample_rate: int = None
-    channels: int = None
-    prebuffer_ms: int = None
-    min_capture_ms: int = None
-    model: str = None
+    # Core
+    language: Optional[str] = None
+    sample_rate: Optional[int] = None
+    channels: Optional[int] = None
+    prebuffer_ms: Optional[int] = None
+    min_capture_ms: Optional[int] = None
+    model: Optional[str] = None
+    # UI
+    mode: Optional[str] = None
+    hotkey: Optional[str] = None
+    # Source
+    config_path: Optional[str] = None
 
     def __post_init__(self):
-        self.language = self.language or os.getenv("PT_LANGUAGE", "ja")
-        self.sample_rate = int(self.sample_rate or os.getenv("PT_SAMPLE_RATE", "16000"))
-        self.channels = int(self.channels or os.getenv("PT_CHANNELS", "1"))
-        self.prebuffer_ms = int(self.prebuffer_ms or os.getenv("PT_PREBUFFER_MS", "1000"))
-        self.min_capture_ms = int(self.min_capture_ms or os.getenv("PT_MIN_CAPTURE_MS", "1800"))
-        self.model = self.model or os.getenv("PT_MODEL", "small")
+        data = self._load_yaml(self.config_path)
+        # base defaults
+        lang = "ja"
+        sr = 16000
+        ch = 1
+        pre = 1000
+        mincap = 1800
+        mdl = "small"
+        mde = "hold"
+        hk = "ctrl"
+        # overlay YAML
+        if data:
+            lang = data.get("language", lang)
+            sr = int(data.get("sample_rate", sr))
+            ch = int(data.get("channels", ch))
+            pre = int(data.get("prebuffer_ms", pre))
+            mincap = int(data.get("min_capture_ms", mincap))
+            mdl = data.get("model", mdl)
+            mde = data.get("mode", mde)
+            hk = data.get("hotkey", hk)
+        # overlay ENV
+        lang = os.getenv("PT_LANGUAGE", lang)
+        sr = int(os.getenv("PT_SAMPLE_RATE", str(sr)))
+        ch = int(os.getenv("PT_CHANNELS", str(ch)))
+        pre = int(os.getenv("PT_PREBUFFER_MS", str(pre)))
+        mincap = int(os.getenv("PT_MIN_CAPTURE_MS", str(mincap)))
+        mdl = os.getenv("PT_MODEL", mdl)
+        # assign with explicit overrides last
+        self.language = self.language or lang
+        self.sample_rate = int(self.sample_rate or sr)
+        self.channels = int(self.channels or ch)
+        self.prebuffer_ms = int(self.prebuffer_ms or pre)
+        self.min_capture_ms = int(self.min_capture_ms or mincap)
+        self.model = self.model or mdl
+        # ui (no env vars defined; YAML or explicit only)
+        self.mode = self.mode or mde
+        self.hotkey = self.hotkey or hk
 
     @property
     def bytes_per_second(self) -> int:
         return self.sample_rate * self.channels * 2
+
+    @staticmethod
+    def _load_yaml(path: Optional[str]) -> Dict[str, Any]:
+        def try_read(p: str) -> Optional[Dict[str, Any]]:
+            try:
+                if not os.path.isfile(p):
+                    return None
+                if yaml is None:
+                    return None
+                with open(p, "r", encoding="utf-8") as f:
+                    obj = yaml.safe_load(f) or {}
+                return obj if isinstance(obj, dict) else {}
+            except Exception:
+                return None
+
+        # explicit path
+        if path:
+            found = try_read(path)
+            return found or {}
+        # search defaults
+        candidates = []
+        # project-local
+        candidates.append(os.path.join(os.getcwd(), "presstalk.yaml"))
+        # XDG
+        xdg = os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+        candidates.append(os.path.join(xdg, "presstalk", "config.yaml"))
+        # legacy home
+        candidates.append(os.path.expanduser("~/.presstalk.yaml"))
+        for p in candidates:
+            data = try_read(p)
+            if data:
+                return data
+        return {}

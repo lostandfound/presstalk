@@ -11,6 +11,7 @@
 - Install (editable): `uv pip install -e .`
 - Run CLI (simulated): `uv run presstalk simulate --chunks hello world --delay-ms 40`
 - Run CLI (local): `uv run presstalk run` (global hotkey by default)
+- Use YAML config: `uv run presstalk run --config ./presstalk.yaml`
 - Tests: `uv run python -m unittest -v` (discovers `tests/test_*.py`).
 
 ## Coding Style & Naming Conventions
@@ -33,4 +34,4 @@
 
 ## Security & Configuration Tips
 - macOS permissions required: Microphone and Accessibility (for paste/hotkey). See `docs/usage.md`.
-- Configuration via env vars: `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL` (see `src/presstalk/config.py`).
+- Configuration: YAML auto-discovery (`./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, `~/.presstalk.yaml`). CLI overrides file; env vars still supported (`PT_LANGUAGE`, etc.).
