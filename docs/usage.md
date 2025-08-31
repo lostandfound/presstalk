@@ -67,19 +67,30 @@ uv run presstalk run --console
 ```
 Type `p` + Enter to press, `r` + Enter to release, `q` to quit.
 
-## 7) Recommended Settings
+## 7) Cross-Platform Tasks (no Make)
+- Prefer these commands on Windows/macOS/Linux to avoid shell differences:
+```bash
+uv run python task.py install
+uv run python task.py test
+uv run python task.py simulate --chunks hello world --delay-ms 40
+uv run python task.py run          # global hotkey
+uv run python task.py run --console
+uv run python task.py clean
+```
+
+## 8) Recommended Settings
 - Language: `--language ja`
 - Model: `--model small`
 - Prebuffer: `--prebuffer-ms 0..300`
 - Minimum capture: `--min-capture-ms 1800`
 
-## 8) Troubleshooting
+## 9) Troubleshooting
 - `sounddevice` errors: `brew install portaudio` then reinstall
 - First run is slow: model download/cache; subsequent runs are faster
 - No paste: check Accessibility permission and text focus in the frontmost app
 - Too short utterances: raise `min_capture_ms` or use small prebuffer
 
-## 9) Linux Notes
+## 10) Linux Notes
 - Recommended packages (Debian/Ubuntu):
 ```bash
 sudo apt-get update && sudo apt-get install -y \
@@ -92,12 +103,12 @@ sudo apt-get install -y wl-clipboard
 - Setup is otherwise the same: create venv, `uv pip install -e .`, then `simulate`/`run --console`.
 - Paste guard defaults include common Linux terminals; override with YAML `paste_blocklist:` or `PT_PASTE_BLOCKLIST`.
 
-## 10) Windows Notes
+## 11) Windows Notes
 - Use Windows Terminal for proper ANSI color rendering.
 - Ensure audio devices are working; `sounddevice` uses PortAudio on Windows.
 - Clipboard and paste guard require a focused text input in the foreground app.
 
-## 11) Environment Variables (optional)
+## 12) Environment Variables (optional)
 - `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL`
 - `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`
 

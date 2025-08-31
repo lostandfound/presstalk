@@ -15,29 +15,24 @@
 
 ## クイックスタート
 
-まずクローン:
+方法A（一発・グローバル推奨）
 ```bash
-git clone https://github.com/lostandfound/presstalk.git
-cd presstalk
-```
-
-方法A（推奨・No‑CD 一発セットアップ）:
-```bash
-make bootstrap
+uv run python task.py bootstrap
 # 以後どこからでも
 presstalk
 ```
 
-方法B（プロジェクト内 venv）:
+方法B（ローカル開発・プロジェクト venv）
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
+# 実行（グローバルホットキー）/ コンソールモード
 uv run presstalk
+uv run presstalk --console
 ```
 Tips:
 - 初回は macOS のマイク/アクセシビリティ許可が必要です。
-- 既定ホットキーは `ctrl`。押して録音、離すとローカルで文字起こししてカーソル位置に貼り付けます。
-- 既定でペーストガード有効（Terminal/iTerm には貼り付けを抑止、設定で変更可能）。
+- 既定ホットキーは `ctrl`。押して録音、離すとローカルで貼り付け。
 
 ## できること（概要）
 - どのテキスト入力欄でも、キー押下中のみ録音→キーを離すと貼り付け。
@@ -45,21 +40,19 @@ Tips:
 - faster‑whisper によるオフライン ASR。音声は端末外へ送信しません。
 - ペーストガードで Terminal/iTerm を回避（YAML で調整可能）。
 
-## Makefile ショートカット
-- `make venv && source .venv/bin/activate && make install`
-- `make run` / `make console`
-- `make simulate CHUNKS="hello world" DELAY=40`
-- `make test` / `make test-file FILE=tests/test_controller.py`
-- `make lint` / `make format` / `make typecheck`
+## タスク実行（クロスプラットフォーム）
+共通のワークフローは task.py を使います:
+- インストール: `uv run python task.py install`
+- テスト: `uv run python task.py test`
+- シミュレーション: `uv run python task.py simulate --chunks hello world --delay-ms 40`
+- 実行: `uv run python task.py run`（または `--console`）
 
-## リポジトリに移動せずに起動する（No‑CD Setup）
-- 一発セットアップ（uv/pipx/venv を自動判別）:
-  - `make bootstrap`
-  - 以後はどこからでも: `presstalk run`（または `pt` エイリアス）
-- グローバルインストール（uv）:
-  - `make install-global` 実行後、`~/.local/bin` を PATH に追加（`make path-zsh` か `make path-bash`）
-- いま即起動（インストール不要・リポジトリから実行）:
-  - `make run-anywhere`
+Unix 環境では Makefile のラッパーもありますが任意です。詳細は docs 参照。
+
+## ドキュメント
+- 使い方（英語）: docs/usage.md（Windows/macOS/Linux の注意・YAML・Makefile ラッパー）
+- 使い方（日本語）: docs/usage-ja.md
+- コマンド一覧: docs/commands.md
 
 ## 依存関係
 - Python 3.9+（macOS 13+ / Windows 10/11 / Linux）

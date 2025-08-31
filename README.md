@@ -16,30 +16,24 @@ Local voice input tool using push‑to‑talk (PTT). Hold a control key to recor
 
 ## Quick Start
 
-Clone first:
+Option A — One-shot (global, recommended)
 ```bash
-git clone https://github.com/lostandfound/presstalk.git
-cd presstalk
-```
-
-Option A — No-CD (recommended, 1-step setup):
-```bash
-make bootstrap
+uv run python task.py bootstrap
 # then from anywhere
 presstalk
 ```
 
-Option B — Project-local venv:
+Option B — Local dev (project venv)
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
+# Run locally (global hotkey) or console mode
 uv run presstalk
+uv run presstalk --console
 ```
-Tips:
-- On first run, macOS prompts for Microphone and Accessibility permissions.
-- Hold the chosen key (default `ctrl`) to record. When you release it, PressTalk transcribes locally and pastes the text at your current cursor position in the active app.
-- Paste guard is enabled by default: paste is skipped when Terminal/iTerm is frontmost (configurable).
-  - Tip: `presstalk` with no args equals `presstalk run`.
+Notes:
+- macOS prompts for Microphone + Accessibility on first run.
+- Hold the key (default `ctrl`) to record; release to paste.
 
 ## What It Does
 - Voice input for any text field: record while holding a key, paste on release.
@@ -47,21 +41,14 @@ Tips:
 - Offline ASR with faster‑whisper; audio never leaves your device.
 - Paste guard avoids Terminal/iTerm by default; customize via YAML.
 
-## Makefile Shortcuts
-- `make venv && source .venv/bin/activate && make install`
-- `make run` / `make console`
-- `make simulate CHUNKS="hello world" DELAY=40`
-- `make test` / `make test-file FILE=tests/test_controller.py`
-- `make lint` / `make format` / `make typecheck`
+## Tasks (Cross-Platform)
+Use the task runner for common workflows:
+- Install: `uv run python task.py install`
+- Test: `uv run python task.py test`
+- Simulate: `uv run python task.py simulate --chunks hello world --delay-ms 40`
+- Run: `uv run python task.py run` (or `--console`)
 
-## No-CD Setup (Run from anywhere)
-- One-shot setup (auto-detects uv/pipx/venv):
-  - `make bootstrap`
-  - Then run globally: `presstalk run` (or `pt` if alias was added)
-- Quick global install (uv):
-  - `make install-global` and ensure `~/.local/bin` is in PATH (`make path-zsh` or `make path-bash`)
-- Run now without install (from repo):
-  - `make run-anywhere`
+For Unix users, a Makefile wrapper exists but is optional. See docs.
 
 ## Configuration (YAML)
 - Auto-discovery: `presstalk.yaml` in the repository root (editable installs).
@@ -91,19 +78,10 @@ uv run presstalk run --console
 ```
 - Type `p` then `r` to record/release, `q` to quit (no global hotkey).
 
-## Install
-
-Recommended with uv (or pip):
-
-```bash
-# Inside this repo (editable dev install)
-uv pip install -e .
-
-# Or, when published to PyPI (example)
-# uv pip install presstalk
-```
-
-All runtime dependencies are included by default (pynput, faster-whisper, numpy, sounddevice).
+## Docs
+- Usage: docs/usage.md (Windows/macOS/Linux notes, YAML config, Makefile wrapper)
+- 日本語: docs/usage-ja.md
+- Commands: docs/commands.md
 
 ## Dependencies
 
@@ -114,14 +92,4 @@ All runtime dependencies are included by default (pynput, faster-whisper, numpy,
 
 Note: Docker is not supported for runtime use (microphone, global hotkeys, and paste require host permissions).
 
-## Run (examples)
-
-```bash
-uv run presstalk simulate --chunks hello world --delay-ms 40
-
-uv run presstalk run \
-  --mode hold \
-  --language ja --model small --prebuffer-ms 200 --min-capture-ms 1800
-```
-
-See docs/usage.md for full instructions (including Windows/Linux notes) and permissions.
+For advanced setup (global install, run-anywhere), see docs.
