@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-08-31
+
+### Changed
+- Refactored internal code structure for better maintainability and readability
+- Reduced duplication by centralizing paste guard logic across platforms
+- Split large CLI `main()` into smaller, testable helpers
+- Simplified configuration initialization into focused helper methods
+- Consolidated environment boolean parsing into shared constants and utility
+
+### Notes
+- No user-facing changes; behavior and CLI remain compatible
+- All existing tests pass; simulation and paste flows unchanged
+
 ## [0.1.0] - 2025-08-31
 
 ### Added
@@ -94,7 +107,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS only (Windows support planned for v0.0.3)
 - Requires Microphone and Accessibility permissions on first run
 
-[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/lostandfound/presstalk/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lostandfound/presstalk/compare/v0.1.0-beta.1...v0.1.0
 [0.1.0-beta.1]: https://github.com/lostandfound/presstalk/compare/v0.0.1...v0.1.0-beta.1
 [0.0.1]: https://github.com/lostandfound/presstalk/releases/tag/v0.0.1
