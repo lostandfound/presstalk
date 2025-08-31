@@ -1,4 +1,4 @@
-# PressTalk Usage (macOS, Local-Only)
+# PressTalk Usage (macOS/Windows, Local-Only)
 
 ## Prerequisites
 - macOS 13+ (Apple Silicon or Intel)
@@ -79,7 +79,12 @@ Type `p` + Enter to press, `r` + Enter to release, `q` to quit.
 - No paste: check Accessibility permission and text focus in the frontmost app
 - Too short utterances: raise `min_capture_ms` or use small prebuffer
 
-## 9) Environment Variables (optional)
+## 9) Windows Notes
+- Use Windows Terminal for proper ANSI color rendering.
+- Ensure audio devices are working; `sounddevice` uses PortAudio on Windows.
+- Clipboard and paste guard require a focused text input in the foreground app.
+
+## 10) Environment Variables (optional)
 - `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL`
 - `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`
 

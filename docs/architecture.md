@@ -13,7 +13,9 @@
 - Engine (`src/presstalk/engine/*`): `FasterWhisperBackend` + `FasterWhisperEngine` implement `AsrEngine` protocol.
 - Controller (`src/presstalk/controller.py`): Press/Release state machine, prebuffer push, live push, and finalize.
 - Orchestrator (`src/presstalk/orchestrator.py`): Coordinates capture lifecycle and pasting.
-- Paste (`src/presstalk/paste_macos.py`): macOS clipboard swap + Cmd+V with paste guard.
+- Paste (`src/presstalk/paste.py`): platform-dispatching `insert_text`.
+  - macOS: `paste_macos.py` (clipboard via pbcopy + Cmd+V via osascript)
+  - Windows: `paste_windows.py` (clipboard via clip.exe + Ctrl+V via pynput)
 
 ## Key Interfaces
 ```python
