@@ -5,7 +5,7 @@
 
 言語: [English](README.md) | [日本語](README-ja.md)
 
-音声入力ツール（プッシュトゥトーク, PTT）。コントロールキーを押している間だけ録音し、離すと最前面アプリのカーソル位置に文字起こし結果を貼り付けます。すべてローカルで動作します（サーバ不要）。
+音声入力ツール（プッシュトゥトーク, PTT）。コントロールキーを押している間だけ録音し、離すと最前面アプリのカーソル位置に文字起こし結果を貼り付けます。すべてローカルで動作します（サーバ不要）。macOS と Windows をサポートします。
 
 - アーキテクチャ: docs/architecture.md
 - 使い方（日本語）: docs/usage-ja.md
@@ -62,9 +62,10 @@ Tips:
   - `make run-anywhere`
 
 ## 依存関係
-- Python 3.9+（macOS 13+ 推奨）
-- 開発ツール: `xcode-select --install`
-- `sounddevice` で失敗する場合: `brew install portaudio` → 再インストール
+- Python 3.9+（macOS 13+ または Windows 10/11）
+- 開発ツール（macOS）: `xcode-select --install`
+- オーディオ（macOSで `sounddevice` が失敗する場合）: `brew install portaudio` → 再インストール
+- 権限: macOS はマイク+アクセシビリティ、Windows は前面アプリのテキスト入力フォーカスが必要
 - 注意: Docker 実行は非対応（マイク/ホットキー/貼り付けの制約）
 
 ## 設定（YAML）
@@ -89,3 +90,5 @@ paste_blocklist:
 ```
 
 ライセンス: MIT（pyproject を参照）
+
+Windows の注意事項やペーストガードの既定値は `docs/usage.md` / `docs/usage-ja.md` を参照してください。
