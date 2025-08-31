@@ -1,18 +1,28 @@
 # Roadmap
 
+## Recently Completed
+
+Features that have been successfully implemented and released.
+
+### Cross-platform Support (Windows) - Completed in v0.1.0-beta.1
+Full Windows platform support implementation
+- ✅ Platform detection and dispatch (#7) 
+- ✅ Windows paste implementation (#6)
+- ✅ OS-specific configuration defaults (#8)
+- ✅ Documentation and setup guides (#5, #9)
+- ✅ Packaging improvements (#10)
+- **Status**: Released in v0.1.0-beta.1 (September 2025)
+
 ## Confirmed / In Progress
 
 Features that are decided and currently under development or planned.
 
-### Cross-platform Support
-Implementing Windows and Linux platform support
-- Platform detection and dispatch (#7)
-- Windows paste implementation (#6) 
-- OS-specific configuration defaults (#8)
-- Documentation and setup guides (#5, #9)
-- Packaging improvements (#10)
-- Linux support (X11/Wayland paste, audio systems)
-- **Status**: Active development (Windows priority, Linux following)
+### Linux Platform Support
+Implementing Linux platform support as next major milestone
+- Linux paste implementation (X11/Wayland compatibility)
+- Linux-specific audio system integration
+- Package distribution (AppImage, Snap, deb)
+- **Status**: Planning phase
 
 ---
 
