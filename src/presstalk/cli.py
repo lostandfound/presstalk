@@ -2,6 +2,7 @@ import argparse
 import time
 import os
 
+from . import __version__
 from .config import Config
 from .ring_buffer import RingBuffer
 from .controller import Controller
@@ -137,7 +138,7 @@ def main():
 
     args = parser.parse_args()
     if args.version:
-        print("presstalk 0.0.1")
+        print(f"presstalk {__version__}")
         return 0
 
     # Default behavior: no subcommand means "run"
