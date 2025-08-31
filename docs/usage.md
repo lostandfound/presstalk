@@ -1,4 +1,4 @@
-# PressTalk Usage (macOS/Windows, Local-Only)
+# PressTalk Usage (macOS/Windows/Linux, Local-Only)
 
 ## Prerequisites
 - macOS 13+ (Apple Silicon or Intel)
@@ -79,12 +79,25 @@ Type `p` + Enter to press, `r` + Enter to release, `q` to quit.
 - No paste: check Accessibility permission and text focus in the frontmost app
 - Too short utterances: raise `min_capture_ms` or use small prebuffer
 
-## 9) Windows Notes
+## 9) Linux Notes
+- Recommended packages (Debian/Ubuntu):
+```bash
+sudo apt-get update && sudo apt-get install -y \
+  portaudio19-dev libasound2-dev xclip xdotool
+```
+- Wayland: install `wl-clipboard` for clipboard support; keystroke injection may be restricted by the compositor. Prefer `--console` mode if global key events are blocked.
+```bash
+sudo apt-get install -y wl-clipboard
+```
+- Setup is otherwise the same: create venv, `uv pip install -e .`, then `simulate`/`run --console`.
+- Paste guard defaults include common Linux terminals; override with YAML `paste_blocklist:` or `PT_PASTE_BLOCKLIST`.
+
+## 10) Windows Notes
 - Use Windows Terminal for proper ANSI color rendering.
 - Ensure audio devices are working; `sounddevice` uses PortAudio on Windows.
 - Clipboard and paste guard require a focused text input in the foreground app.
 
-## 10) Environment Variables (optional)
+## 11) Environment Variables (optional)
 - `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL`
 - `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`
 
