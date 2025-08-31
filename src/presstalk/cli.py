@@ -7,7 +7,7 @@ from .ring_buffer import RingBuffer
 from .controller import Controller
 from .capture import PCMCapture
 from .orchestrator import Orchestrator
-from .paste_macos import insert_text
+from .paste import insert_text
 from .engine.dummy_engine import DummyAsrEngine
 from .logger import get_logger, Logger, QUIET, INFO, DEBUG
 from .logo import print_logo
