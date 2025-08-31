@@ -4,6 +4,7 @@ Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely lo
 
 - Design: docs/design.md
 - Usage: docs/usage.md
+- Commands: docs/commands.md
 
 ## Quick Start
 
