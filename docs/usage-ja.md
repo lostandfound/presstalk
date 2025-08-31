@@ -81,7 +81,20 @@ uv run presstalk run
 - 貼り付かない: アクセシビリティ許可、最前面アプリのテキスト入力フォーカスを確認。
 - 短すぎて結果が出ない: `--min-capture-ms 2000`、`--prebuffer-ms 200..300` を試す。
 
-## 9) 環境変数での既定値（任意）
+## 9) Linux の注意事項
+- 推奨パッケージ（Debian/Ubuntu 例）:
+```bash
+sudo apt-get update && sudo apt-get install -y \
+  portaudio19-dev libasound2-dev xclip xdotool
+```
+- Wayland: クリップボードに `wl-clipboard`（`wl-copy`）を導入。コンポジタ設定によりキー注入が制限される場合は `--console` を利用してください。
+```bash
+sudo apt-get install -y wl-clipboard
+```
+- セットアップ自体は macOS/Windows と同様に venv 作成→ `uv pip install -e .` → `simulate`/`run --console`。
+- ペーストガードの既定には一般的な Linux ターミナルが含まれます。YAML の `paste_blocklist:` か `PT_PASTE_BLOCKLIST` で上書き可能。
+
+## 10) 環境変数での既定値（任意）
 CLI引数の代わりに以下も利用可能（`src/presstalk/config.py`参照）:
 - `PT_LANGUAGE`（既定: `ja`）
 - `PT_SAMPLE_RATE`（既定: `16000`）
@@ -115,3 +128,4 @@ uv run presstalk run --mode hold --hotkey ctrl --language ja --model small --pre
   - 既定ブロックリスト（OS別）:
     - macOS: `Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2`
     - Windows: `cmd.exe,powershell.exe,pwsh.exe,WindowsTerminal.exe,wt.exe,conhost.exe`
+    - Linux: `gnome-terminal,org.gnome.Terminal,konsole,xterm,alacritty,kitty,wezterm,terminator,tilix,xfce4-terminal,lxterminal,io.elementary.terminal`

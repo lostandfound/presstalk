@@ -14,8 +14,9 @@
 - Controller (`src/presstalk/controller.py`): Press/Release state machine, prebuffer push, live push, and finalize.
 - Orchestrator (`src/presstalk/orchestrator.py`): Coordinates capture lifecycle and pasting.
 - Paste (`src/presstalk/paste.py`): platform-dispatching `insert_text`.
-  - macOS: `paste_macos.py` (clipboard via pbcopy + Cmd+V via osascript)
-  - Windows: `paste_windows.py` (clipboard via clip.exe + Ctrl+V via pynput)
+  - macOS: `paste_macos.py` (pbcopy + osascript Cmd+V)
+  - Windows: `paste_windows.py` (clip.exe + pynput Ctrl+V)
+  - Linux: `paste_linux.py` (wl-copy/xclip/xsel + pynput or xdotool)
 
 ## Key Interfaces
 ```python

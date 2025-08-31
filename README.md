@@ -5,7 +5,7 @@
 
 Language: [English](README.md) | [日本語](README-ja.md)
 
-Local voice input tool using push‑to‑talk (PTT). Hold a control key to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your machine (no server). macOS and Windows are supported.
+Local voice input tool using push‑to‑talk (PTT). Hold a control key to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your machine (no server). macOS, Windows, and Linux are supported.
 
 - Architecture: docs/architecture.md
 - Roadmap: docs/ROADMAP.md
@@ -107,7 +107,7 @@ All runtime dependencies are included by default (pynput, faster-whisper, numpy,
 
 ## Dependencies
 
-- Python 3.9+ on macOS 13+ or Windows 10/11.
+- Python 3.9+ on macOS 13+, Windows 10/11, or Linux.
 - Build tools (macOS): `xcode-select --install`.
 - Audio backend (macOS, if `sounddevice` build fails): `brew install portaudio`.
 - Permissions: macOS requires Microphone + Accessibility; Windows requires a focused text input to paste.
@@ -124,4 +124,4 @@ uv run presstalk run \
   --language ja --model small --prebuffer-ms 200 --min-capture-ms 1800
 ```
 
-See docs/usage.md for full instructions (including Windows notes) and permissions.
+See docs/usage.md for full instructions (including Windows/Linux notes) and permissions.
