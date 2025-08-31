@@ -8,7 +8,13 @@ version = "0.0.1"
 description = "Local push-to-talk CLI with always-on capture and offline ASR"
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies = []
+dependencies = [
+    "pynput",
+    "faster-whisper",
+    "numpy",
+    "sounddevice",
+    "PyYAML",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: End Users/Desktop",
@@ -22,24 +28,8 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-[project.optional-dependencies]
-# Core runtime extras (select what you need)
-engine = [
-  "faster-whisper",
-  "numpy",
-]
-capture = [
-  "sounddevice",
-]
-hotkey = [
-  "pynput",
-]
-all = [
-  "faster-whisper",
-  "numpy",
-  "sounddevice",
-  "pynput",
-]
+#[project.optional-dependencies]
+# (No extras; all core runtime deps are required.)
 
 [project.scripts]
 presstalk = "presstalk.cli:main"

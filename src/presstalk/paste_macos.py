@@ -1,6 +1,6 @@
 import os
 import subprocess
-from typing import Callable, Optional, Tuple, Dict
+from typing import Callable, Optional, Tuple, Dict, Sequence, Union
 
 
 def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = None) -> Dict[str, str]:
@@ -27,7 +27,15 @@ def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = 
     return {k: v for k, v in {"name": name, "bundle_id": bid}.items() if v}
 
 
-def insert_text(text: str, *, run_cmd: Optional[Callable[[list], int]] = None, frontmost_getter: Optional[Callable[[], Dict[str, str]]] = None) -> bool:
+def insert_text(
+    text: str,
+    *,
+    run_cmd: Optional[Callable[[list], int]] = None,
+    frontmost_getter: Optional[Callable[[], Dict[str, str]]] = None,
+    guard_enabled: Optional[bool] = None,
+    blocklist: Optional[Union[str, Sequence[str]]] = None,
+    clipboard_fn: Optional[Callable[[str], bool]] = None,
+) -> bool:
     """Insert text at current cursor by clipboard swap + Cmd+V (macOS).
 
     For testability, an optional run_cmd can be supplied to execute a command and
@@ -37,8 +45,8 @@ def insert_text(text: str, *, run_cmd: Optional[Callable[[list], int]] = None, f
         return True
 
     # Paste guard: optionally block paste when frontmost app matches blocklist (e.g., Terminal)
-    guard_enabled = os.getenv("PT_PASTE_GUARD", "1") not in ("0", "false", "False")
-    if guard_enabled:
+    guard = guard_enabled if guard_enabled is not None else (os.getenv("PT_PASTE_GUARD", "1") not in ("0", "false", "False"))
+    if guard:
         try:
             fg = frontmost_getter() if frontmost_getter else _get_frontmost_app()
         except Exception:
@@ -46,17 +54,30 @@ def insert_text(text: str, *, run_cmd: Optional[Callable[[list], int]] = None, f
         if fg:
             name = (fg.get("name") or "").lower()
             bid = (fg.get("bundle_id") or "").lower()
-            block_env = os.getenv("PT_PASTE_BLOCKLIST", "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2")
-            blocks = [s.strip().lower() for s in block_env.split(",") if s.strip()]
+            if blocklist is None:
+                block_env = os.getenv("PT_PASTE_BLOCKLIST", "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2")
+                blocks = [s.strip().lower() for s in block_env.split(",") if s.strip()]
+            else:
+                if isinstance(blocklist, str):
+                    blocks = [s.strip().lower() for s in blocklist.split(",") if s.strip()]
+                else:
+                    blocks = [str(s).strip().lower() for s in blocklist if str(s).strip()]
             targets = [name, bid]
             if any(b and any(t.find(b) != -1 for t in targets if t) for b in blocks):
                 return False
     # copy to clipboard
-    try:
-        p = subprocess.Popen(["pbcopy"], stdin=subprocess.PIPE, text=True)
-        p.communicate(text, timeout=1)
-    except Exception:
-        return False
+    if clipboard_fn is not None:
+        try:
+            if not clipboard_fn(text):
+                return False
+        except Exception:
+            return False
+    else:
+        try:
+            p = subprocess.Popen(["pbcopy"], stdin=subprocess.PIPE, text=True)
+            p.communicate(text, timeout=1)
+        except Exception:
+            return False
 
     # simulate Cmd+V via osascript
     if run_cmd is None:
