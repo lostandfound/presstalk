@@ -142,7 +142,8 @@ def main():
 
     # Default behavior: no subcommand means "run"
     if not args.cmd:
-        args.cmd = "run"
+        # Reparse with implicit 'run' so subparser defaults are populated
+        args = parser.parse_args(["run"])
 
     if args.cmd == "simulate":
         # default to local YAML if present
