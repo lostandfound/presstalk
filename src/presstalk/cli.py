@@ -1,0 +1,226 @@
+import argparse
+import time
+
+from .config import Config
+from .ring_buffer import RingBuffer
+from .controller import Controller
+from .capture import PCMCapture
+from .orchestrator import Orchestrator
+from .paste_macos import insert_text
+from .engine.dummy_engine import DummyAsrEngine
+from .logger import get_logger, Logger, QUIET, INFO, DEBUG
+
+
+def _build_run_orchestrator(cfg: Config) -> Orchestrator:
+    # Ring for prebuffer
+    pre_bytes = int(cfg.bytes_per_second * (cfg.prebuffer_ms / 1000.0))
+    ring = RingBuffer(max(1, pre_bytes or 1))
+
+    # Engine backend (lazy heavy deps)
+    try:
+        from .engine.fwhisper_backend import FasterWhisperBackend
+        from .engine.fwhisper_engine import FasterWhisperEngine
+    except Exception as e:
+        raise RuntimeError(f"engine modules unavailable: {e}")
+
+    backend = FasterWhisperBackend(model=cfg.model)
+    engine = FasterWhisperEngine(sample_rate=cfg.sample_rate, language=cfg.language, model=cfg.model, backend=backend)
+
+    # Capture source (sounddevice)
+    try:
+        from .capture_sd import SoundDeviceSource
+    except Exception as e:
+        raise RuntimeError(f"capture module unavailable: {e}")
+
+    source = SoundDeviceSource(sample_rate=cfg.sample_rate, channels=cfg.channels, frames_per_block=max(160, int(cfg.sample_rate*cfg.channels*0.02)))
+    capture = PCMCapture(sample_rate=cfg.sample_rate, channels=cfg.channels, chunk_ms=20, source=source)
+
+    controller = Controller(engine, ring, prebuffer_ms=cfg.prebuffer_ms, min_capture_ms=cfg.min_capture_ms, bytes_per_second=cfg.bytes_per_second, language=cfg.language)
+    orch = Orchestrator(controller=controller, ring=ring, capture=capture, paste_fn=insert_text)
+    return orch
+
+
+class _StatusOrch:
+    """Orchestrator wrapper that prints simple status and protects finalize phase."""
+
+    def __init__(self, orch: Orchestrator) -> None:
+        self._o = orch
+        self.is_finalizing = False
+
+    def __getattr__(self, name):  # delegate to underlying orchestrator
+        return getattr(self._o, name)
+
+    def press(self):
+        # avoid re-press spam
+        try:
+            if getattr(self._o.controller, 'is_recording', lambda: False)():
+                return
+        except Exception:
+            pass
+        from .logger import get_logger
+        get_logger().info("[PT] Recording...")
+        return self._o.press()
+
+    def release(self):
+        # ignore if not recording or already finalizing
+        try:
+            rec = getattr(self._o.controller, 'is_recording', lambda: False)()
+        except Exception:
+            rec = True
+        if self.is_finalizing or not rec:
+            return ""
+        self.is_finalizing = True
+        from .logger import get_logger
+        get_logger().info("[PT] Finalizing...")
+        try:
+            import time as _t
+            _t0 = _t.time()
+            text = self._o.release()
+            eng_time = _t.time() - _t0
+            st = self._o.stats()
+            try:
+                approx_sec = st["bytes"] / max(1, st["bytes_per_second"]) if st else 0
+            except Exception:
+                approx_sec = 0
+            get_logger().info(f"[PT] Stats: bytes={st.get('bytes',0)} duration={st.get('duration_s',0):.2f}s (~{approx_sec:.2f}s audio)")
+            get_logger().info(f"[PT] Engine: {eng_time:.2f}s")
+            if text:
+                get_logger().info("[PT] Final: " + text)
+            else:
+                get_logger().info("[PT] No transcription produced.")
+            return text
+        finally:
+            self.is_finalizing = False
+
+
+class _DummySource:
+    def __init__(self, chunks, delay_s=0.0):
+        self._chunks = list(chunks)
+        self._delay = delay_s
+    def start(self):
+        pass
+    def read(self, nbytes: int):
+        if self._delay:
+            time.sleep(self._delay)
+        if not self._chunks:
+            return None
+        return self._chunks.pop(0)
+    def stop(self):
+        pass
+
+
+def main():
+    parser = argparse.ArgumentParser(prog="presstalk", description="Local push-to-talk (WIP)")
+    parser.add_argument("--version", action="store_true", help="Show version and exit")
+    sub = parser.add_subparsers(dest="cmd")
+
+    sim = sub.add_parser("simulate", help="Run a simulated press using dummy capture/engine")
+    sim.add_argument("--chunks", nargs="*", default=["aa", "bb", "cc"], help="List of ASCII chunks to feed (default: aa bb cc)")
+    sim.add_argument("--delay-ms", type=int, default=50, help="Delay between chunks (ms)")
+
+    runp = sub.add_parser("run", help="Run local PTT with sounddevice + faster-whisper")
+    runp.add_argument("--mode", choices=["hold", "toggle"], default="hold", help="PTT mode")
+    runp.add_argument("--global-hotkey", action="store_true", help="Use global hotkey via pynput instead of console input")
+    runp.add_argument("--hotkey", default="ctrl", help="Hotkey key name (ctrl/cmd/alt/space or character)")
+    runp.add_argument("--log-level", choices=["QUIET", "INFO", "DEBUG"], default="INFO", help="Logging level")
+    runp.add_argument("--language", default=None, help="Override language (e.g., ja)")
+    runp.add_argument("--model", default=None, help="Override model (e.g., small)")
+    runp.add_argument("--prebuffer-ms", type=int, default=None, help="Prebuffer milliseconds (0..300 recommended)")
+    runp.add_argument("--min-capture-ms", type=int, default=None, help="Minimum capture ms (e.g., 1800)")
+
+    args = parser.parse_args()
+    if args.version:
+        print("presstalk 0.0.1")
+        return 0
+
+    if args.cmd == "simulate":
+        cfg = Config()
+        bps = cfg.bytes_per_second
+        pre_bytes = int(bps * (cfg.prebuffer_ms / 1000.0))
+        ring = RingBuffer(max(1, pre_bytes or 1))
+        eng = DummyAsrEngine()
+        ctl = Controller(eng, ring, prebuffer_ms=cfg.prebuffer_ms, min_capture_ms=cfg.min_capture_ms, bytes_per_second=bps, language=cfg.language)
+        src = _DummySource([c.encode("utf-8") for c in args.chunks], delay_s=args.delay_ms / 1000.0)
+        cap = PCMCapture(sample_rate=cfg.sample_rate, channels=cfg.channels, chunk_ms=10, source=src)
+        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: print("FINAL:", t) or True)
+        orch.press()
+        # wait while capture runs
+        while cap.is_running():
+            time.sleep(0.01)
+        text = orch.release()
+        print("DONE:", text)
+        return 0
+
+    if args.cmd == "run":
+        cfg = Config()
+        if args.language:
+            cfg.language = args.language
+        if args.model:
+            cfg.model = args.model
+        if args.prebuffer_ms is not None:
+            cfg.prebuffer_ms = int(args.prebuffer_ms)
+        if args.min_capture_ms is not None:
+            cfg.min_capture_ms = int(args.min_capture_ms)
+
+        try:
+            orch = _build_run_orchestrator(cfg)
+        except Exception as e:
+            print(f"Error initializing: {e}")
+            print("- Ensure 'sounddevice', 'numpy', and 'faster-whisper' are installed.")
+            return 1
+
+        # configure logger
+        lvl = {"QUIET": QUIET, "INFO": INFO, "DEBUG": DEBUG}[args.log_level]
+        get_logger().set_level(lvl)
+
+        if args.global_hotkey:
+            try:
+                from .hotkey_pynput import GlobalHotkeyRunner
+            except Exception as e:
+                print(f"Global hotkey not available: {e}")
+                return 1
+            orch = _StatusOrch(orch)
+            runner = GlobalHotkeyRunner(orch, mode=args.mode, key_name=args.hotkey)
+            runner.start()
+            get_logger().info(f"Global hotkey active: '{args.hotkey}' in {args.mode} mode. Ctrl+C to exit.")
+            try:
+                while True:
+                    time.sleep(0.2)
+            except KeyboardInterrupt:
+                pass
+            finally:
+                runner.stop()
+        else:
+            from .hotkey import HotkeyHandler
+            orch = _StatusOrch(orch)
+            hk = HotkeyHandler(orch, mode=args.mode)
+
+            get_logger().info("PressTalk running (CLI). Commands:")
+            if args.mode == 'hold':
+                get_logger().info("- Type 'p'+Enter to press, 'r'+Enter to release, 'q'+Enter to quit")
+            else:
+                get_logger().info("- Type 't'+Enter to toggle, 'q'+Enter to quit")
+            try:
+                while True:
+                    cmd = input("> ").strip().lower()
+                    if cmd == 'q':
+                        if orch.is_finalizing:
+                            print("[PT] Finalizing... please wait")
+                            continue
+                        if orch.capture.is_running():
+                            orch.capture.stop()
+                        break
+                    if args.mode == 'hold':
+                        if cmd == 'p':
+                            hk.handle_key_down()
+                        elif cmd == 'r':
+                            hk.handle_key_up()
+                    else:
+                        if cmd == 't':
+                            hk.handle_key_down(); hk.handle_key_up()
+            except KeyboardInterrupt:
+                pass
+        return 0
+
+    parser.print_help()
+    return 0

@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: presstalk
+Version: 0.0.1
+Summary: Local push-to-talk CLI with always-on capture and offline ASR
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# PressTalk CLI
+
+Local push-to-talk tool (work in progress).
+
+- Design: docs/design.md
+- Usage: docs/usage.md

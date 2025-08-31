@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "presstalk"
+version = "0.0.1"
+description = "Local push-to-talk CLI with always-on capture and offline ASR"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Environment :: MacOS X",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+# Core runtime extras (select what you need)
+engine = [
+  "faster-whisper",
+  "numpy",
+]
+capture = [
+  "sounddevice",
+]
+hotkey = [
+  "pynput",
+]
+all = [
+  "faster-whisper",
+  "numpy",
+  "sounddevice",
+  "pynput",
+]
+
+[project.scripts]
+presstalk = "presstalk.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["presstalk"]
