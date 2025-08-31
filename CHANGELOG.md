@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Frontmost app detection for paste guard (X11: xdotool+xprop, Wayland: swaymsg)
 - Linux-specific paste guard defaults for common terminals
   - gnome-terminal, org.gnome.Terminal, konsole, xterm, alacritty, kitty, wezterm, terminator, tilix, xfce4-terminal, lxterminal, io.elementary.terminal
+- **Cross-platform task runner** (`task.py`): Python-based replacement for Makefile
+  - Windows/macOS/Linux compatible workflow commands
+  - Tasks: clean, install, test, simulate, run, lint, format
+  - Bootstrap and install-global capabilities
+  - Comprehensive test coverage for task runner
 - Comprehensive Linux testing suite
 - Linux setup documentation and platform-specific guidance
 
@@ -24,13 +29,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stable release**: Promoted from beta to stable after successful cross-platform validation
 - Enhanced platform abstraction layer for three-platform support
 - Documentation updated to reflect complete cross-platform capabilities
+- Makefile simplified to delegate core tasks to task.py (maintains Unix compatibility)
 
 ### Technical Implementation
 - Added `src/presstalk/paste_linux.py` with comprehensive Linux implementation
 - Enhanced platform dispatcher for Linux detection (`sys.platform.startswith('linux')`)
 - Extended `src/presstalk/config.py` with Linux-specific defaults
 - Added Linux-specific test coverage (`tests/test_paste_linux.py`)
+- Added `task.py` cross-platform task runner with comprehensive test suite (`tests/test_task.py`)
 - Updated package classifiers for Linux support
+- Updated README and documentation to prioritize task.py over Makefile
 
 ### Notes
 - **Major Milestone**: Complete cross-platform support for macOS, Windows, and Linux
