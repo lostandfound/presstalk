@@ -10,6 +10,40 @@ import presstalk.cli as cli  # type: ignore
 
 
 class TestCliRefactor(unittest.TestCase):
+    def test_build_parser_simulate_defaults(self):
+        p = cli.build_parser()
+        args = p.parse_args(["simulate"])
+        self.assertEqual(args.cmd, "simulate")
+        self.assertEqual(args.chunks, ["aa", "bb", "cc"])  # default
+        self.assertEqual(args.delay_ms, 50)
+
+    def test_build_parser_run_flags_parse(self):
+        p = cli.build_parser()
+        args = p.parse_args([
+            "run",
+            "--mode", "toggle",
+            "--console",
+            "--hotkey", "cmd",
+            "--log-level", "DEBUG",
+            "--language", "ja",
+            "--model", "small",
+            "--prebuffer-ms", "123",
+            "--min-capture-ms", "456",
+        ])
+        self.assertEqual(args.cmd, "run")
+        self.assertEqual(args.mode, "toggle")
+        self.assertTrue(args.console)
+        self.assertEqual(args.hotkey, "cmd")
+        self.assertEqual(args.log_level, "DEBUG")
+        self.assertEqual(args.language, "ja")
+        self.assertEqual(args.model, "small")
+        self.assertEqual(args.prebuffer_ms, 123)
+        self.assertEqual(args.min_capture_ms, 456)
+
+    def test_build_parser_version_flag(self):
+        p = cli.build_parser()
+        args = p.parse_args(["--version"])
+        self.assertTrue(args.version)
     def test_find_repo_config_prefers_explicit(self):
         explicit = os.path.abspath("presstalk.yaml")
         self.assertTrue(os.path.isfile(explicit))
@@ -75,4 +109,3 @@ class TestCliRefactor(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
