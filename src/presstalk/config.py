@@ -90,15 +90,67 @@ class Config:
 
     @staticmethod
     def _load_yaml(path: Optional[str]) -> Dict[str, Any]:
+        def _mini_yaml_parse(text: str) -> Dict[str, Any]:
+            data: Dict[str, Any] = {}
+            key = None
+            in_list = False
+            cur_list: list = []
+            for raw in text.splitlines():
+                line = raw.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if in_list and line.startswith('-'):
+                    item = line[1:].strip()
+                    # best-effort typing
+                    if item.lower() in ('true', 'false'):
+                        val: Any = item.lower() == 'true'
+                    else:
+                        try:
+                            val = int(item)
+                        except Exception:
+                            val = item
+                    cur_list.append(val)
+                    continue
+                # end current list if we see a new key
+                if in_list:
+                    data[key] = cur_list
+                    in_list = False
+                    cur_list = []
+                    key = None
+                if ':' in line:
+                    k, v = line.split(':', 1)
+                    k = k.strip()
+                    v = v.strip()
+                    if v == '':
+                        # beginning of list section
+                        key = k
+                        in_list = True
+                        cur_list = []
+                        continue
+                    # best-effort typing
+                    if v.lower() in ('true', 'false'):
+                        val = v.lower() == 'true'
+                    else:
+                        try:
+                            val = int(v)
+                        except Exception:
+                            val = v
+                    data[k] = val
+            if in_list and key is not None:
+                data[key] = cur_list
+            return data
+
         def try_read(p: str) -> Optional[Dict[str, Any]]:
             try:
                 if not os.path.isfile(p):
                     return None
-                if yaml is None:
-                    return None
                 with open(p, "r", encoding="utf-8") as f:
-                    obj = yaml.safe_load(f) or {}
-                return obj if isinstance(obj, dict) else {}
+                    text = f.read()
+                if yaml is not None:
+                    obj = yaml.safe_load(text) or {}
+                    return obj if isinstance(obj, dict) else {}
+                # fallback minimal parser (supports this project's keys)
+                return _mini_yaml_parse(text)
             except Exception:
                 return None
 

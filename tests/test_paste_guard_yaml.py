@@ -30,7 +30,14 @@ class TestPasteGuardYaml(unittest.TestCase):
             # simulate Terminal as frontmost app; run_cmd returns success (would paste if allowed)
             front = lambda: {"name": "Terminal", "bundle_id": "com.apple.Terminal"}
             run_cmd = lambda cmd: 0
-            ok = insert_text("hello", frontmost_getter=front, run_cmd=run_cmd, guard_enabled=cfg.paste_guard, blocklist=cfg.paste_blocklist)
+            ok = insert_text(
+                "hello",
+                frontmost_getter=front,
+                run_cmd=run_cmd,
+                guard_enabled=cfg.paste_guard,
+                blocklist=cfg.paste_blocklist,
+                clipboard_fn=lambda s: True,
+            )
             self.assertFalse(ok)
         finally:
             os.remove(path)
@@ -47,7 +54,14 @@ class TestPasteGuardYaml(unittest.TestCase):
             # even if Terminal is frontmost, guard disabled => paste proceeds
             front = lambda: {"name": "Terminal"}
             run_cmd = lambda cmd: 0
-            ok = insert_text("hello", frontmost_getter=front, run_cmd=run_cmd, guard_enabled=cfg.paste_guard, blocklist=cfg.paste_blocklist)
+            ok = insert_text(
+                "hello",
+                frontmost_getter=front,
+                run_cmd=run_cmd,
+                guard_enabled=cfg.paste_guard,
+                blocklist=cfg.paste_blocklist,
+                clipboard_fn=lambda s: True,
+            )
             self.assertTrue(ok)
         finally:
             os.remove(path)
@@ -55,4 +69,3 @@ class TestPasteGuardYaml(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

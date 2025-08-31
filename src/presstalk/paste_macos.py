@@ -34,6 +34,7 @@ def insert_text(
     frontmost_getter: Optional[Callable[[], Dict[str, str]]] = None,
     guard_enabled: Optional[bool] = None,
     blocklist: Optional[Union[str, Sequence[str]]] = None,
+    clipboard_fn: Optional[Callable[[str], bool]] = None,
 ) -> bool:
     """Insert text at current cursor by clipboard swap + Cmd+V (macOS).
 
@@ -65,11 +66,18 @@ def insert_text(
             if any(b and any(t.find(b) != -1 for t in targets if t) for b in blocks):
                 return False
     # copy to clipboard
-    try:
-        p = subprocess.Popen(["pbcopy"], stdin=subprocess.PIPE, text=True)
-        p.communicate(text, timeout=1)
-    except Exception:
-        return False
+    if clipboard_fn is not None:
+        try:
+            if not clipboard_fn(text):
+                return False
+        except Exception:
+            return False
+    else:
+        try:
+            p = subprocess.Popen(["pbcopy"], stdin=subprocess.PIPE, text=True)
+            p.communicate(text, timeout=1)
+        except Exception:
+            return False
 
     # simulate Cmd+V via osascript
     if run_cmd is None:
