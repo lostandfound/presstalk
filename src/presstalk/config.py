@@ -20,6 +20,9 @@ class Config:
     # UI
     mode: Optional[str] = None
     hotkey: Optional[str] = None
+    # Paste
+    paste_guard: Optional[bool] = None
+    paste_blocklist: Optional[Any] = None
     # Source
     config_path: Optional[str] = None
 
@@ -34,6 +37,8 @@ class Config:
         mdl = "small"
         mde = "hold"
         hk = "ctrl"
+        pguard = True
+        pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
         # overlay YAML
         if data:
             lang = data.get("language", lang)
@@ -44,6 +49,13 @@ class Config:
             mdl = data.get("model", mdl)
             mde = data.get("mode", mde)
             hk = data.get("hotkey", hk)
+            if "paste_guard" in data:
+                try:
+                    pguard = bool(data.get("paste_guard"))
+                except Exception:
+                    pass
+            if "paste_blocklist" in data:
+                pblock = data.get("paste_blocklist", pblock)
         # overlay ENV
         lang = os.getenv("PT_LANGUAGE", lang)
         sr = int(os.getenv("PT_SAMPLE_RATE", str(sr)))
@@ -51,6 +63,11 @@ class Config:
         pre = int(os.getenv("PT_PREBUFFER_MS", str(pre)))
         mincap = int(os.getenv("PT_MIN_CAPTURE_MS", str(mincap)))
         mdl = os.getenv("PT_MODEL", mdl)
+        # paste guard envs
+        env_guard = os.getenv("PT_PASTE_GUARD")
+        if env_guard is not None:
+            pguard = env_guard not in ("0", "false", "False")
+        pblock = os.getenv("PT_PASTE_BLOCKLIST", pblock)
         # assign with explicit overrides last
         self.language = self.language or lang
         self.sample_rate = int(self.sample_rate or sr)
@@ -61,6 +78,11 @@ class Config:
         # ui (no env vars defined; YAML or explicit only)
         self.mode = self.mode or mde
         self.hotkey = self.hotkey or hk
+        # paste
+        if self.paste_guard is None:
+            self.paste_guard = pguard
+        if self.paste_blocklist is None:
+            self.paste_blocklist = pblock
 
     @property
     def bytes_per_second(self) -> int:

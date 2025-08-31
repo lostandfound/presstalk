@@ -36,7 +36,10 @@ def _build_run_orchestrator(cfg: Config) -> Orchestrator:
     capture = PCMCapture(sample_rate=cfg.sample_rate, channels=cfg.channels, chunk_ms=20, source=source)
 
     controller = Controller(engine, ring, prebuffer_ms=cfg.prebuffer_ms, min_capture_ms=cfg.min_capture_ms, bytes_per_second=cfg.bytes_per_second, language=cfg.language)
-    orch = Orchestrator(controller=controller, ring=ring, capture=capture, paste_fn=insert_text)
+    def _paste(text: str) -> bool:
+        return insert_text(text, guard_enabled=cfg.paste_guard, blocklist=cfg.paste_blocklist)
+
+    orch = Orchestrator(controller=controller, ring=ring, capture=capture, paste_fn=_paste)
     return orch
 
 

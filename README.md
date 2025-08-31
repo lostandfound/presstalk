@@ -34,6 +34,12 @@ prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold      # hold or toggle
 hotkey: ctrl    # ctrl/cmd/alt/space or key
+paste_guard: true
+paste_blocklist:
+  - Terminal
+  - iTerm2
+  - com.apple.Terminal
+  - com.googlecode.iterm2
 ```
 
 ### Console Input mode (optional)

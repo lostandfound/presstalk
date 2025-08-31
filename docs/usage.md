@@ -41,6 +41,12 @@ prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold
 hotkey: ctrl
+paste_guard: true
+paste_blocklist:
+  - Terminal
+  - iTerm2
+  - com.apple.Terminal
+  - com.googlecode.iterm2
 ```
 
 ## 4) 動作確認（ダミー）
