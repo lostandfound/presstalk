@@ -1,5 +1,7 @@
 ## PressTalk CLI
 
+言語: [English](README.md) | [日本語](README-ja.md)
+
 ローカル完結のプッシュトゥトーク（PTT）。macOS 向け、常時キャプチャ＋オフライン ASR（faster-whisper）。
 
 - アーキテクチャ: docs/architecture.md

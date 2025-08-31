@@ -1,5 +1,7 @@
 # PressTalk CLI
 
+Language: [English](README.md) | [日本語](README-ja.md)
+
 Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely locally (no server required).
 
 - Architecture: docs/architecture.md
