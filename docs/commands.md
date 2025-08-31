@@ -5,6 +5,7 @@
 - Subcommands: `run`, `simulate`
 
 ## run — Local PTT (default: global hotkey)
+(Note: `presstalk` with no args is equivalent to `presstalk run`.)
 - `--config <path>`: YAML path. Auto: `./presstalk.yaml` if present.
 - `--mode <hold|toggle>`: PTT mode. Defaults to YAML or `hold`.
 - `--console`: Use console input instead of global hotkey.

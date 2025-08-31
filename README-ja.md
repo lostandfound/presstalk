@@ -22,14 +22,14 @@ cd presstalk
 ```bash
 make bootstrap
 # 以後どこからでも
-presstalk run
+presstalk
 ```
 
 方法B（プロジェクト内 venv）:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-uv run presstalk run
+uv run presstalk
 ```
 Tips:
 - 初回は macOS のマイク/アクセシビリティ許可が必要

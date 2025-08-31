@@ -23,19 +23,20 @@ Option A — No-CD (recommended, 1-step setup):
 ```bash
 make bootstrap
 # then from anywhere
-presstalk run
+presstalk
 ```
 
 Option B — Project-local venv:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-uv run presstalk run
+uv run presstalk
 ```
 Tips:
 - On first run, macOS prompts for Microphone and Accessibility permissions.
 - Hold the chosen key (default `ctrl`) to record. When you release it, PressTalk transcribes locally and pastes the text at your current cursor position in the active app.
 - Paste guard is enabled by default: paste is skipped when Terminal/iTerm is frontmost (configurable).
+  - Tip: `presstalk` with no args equals `presstalk run`.
 
 ## What It Does
 - Voice input for any text field: record while holding a key, paste on release.

@@ -140,6 +140,10 @@ def main():
         print("presstalk 0.0.1")
         return 0
 
+    # Default behavior: no subcommand means "run"
+    if not args.cmd:
+        args.cmd = "run"
+
     if args.cmd == "simulate":
         # default to local YAML if present
         cfg_path = args.config
