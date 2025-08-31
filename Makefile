@@ -29,30 +29,28 @@ venv:
 	$(UV) venv
 
 install:
-	$(UV) pip install -e .
+	$(UV) run python task.py install
 
 run:
-	$(UV) run presstalk run
+	$(UV) run python task.py run
 
 console:
-	$(UV) run presstalk run --console
+	$(UV) run python task.py run --console
 
 CHUNKS ?= hello world
 DELAY ?= 40
 simulate:
-	$(UV) run presstalk simulate --chunks $(CHUNKS) --delay-ms $(DELAY)
+	$(UV) run python task.py simulate --chunks $(CHUNKS) --delay-ms $(DELAY)
 
 test:
-	$(UV) run python -m unittest -v
+	$(UV) run python task.py test
 
 FILE ?= tests/test_controller.py
 test-file:
-	$(UV) run python -m unittest $(FILE) -v
+	$(UV) run python task.py test --file $(FILE)
 
 clean:
-	rm -rf build dist .pytest_cache
-	find . -name __pycache__ -prune -exec rm -rf {} +
-	find . -name '*.egg-info' -prune -exec rm -rf {} +
+	$(UV) run python task.py clean
 
 KEY ?= ctrl
 MODE ?= hold
@@ -114,22 +112,10 @@ run-anywhere:
 	fi
 
 lint:
-	@if command -v ruff >/dev/null 2>&1; then \
-		$(UV) run ruff check . ; \
-	elif command -v flake8 >/dev/null 2>&1; then \
-		$(UV) run flake8 . ; \
-	else \
-		echo "No linter found (install ruff or flake8)" ; \
-	fi
+	$(UV) run python task.py lint
 
 format:
-	@if command -v ruff >/dev/null 2>&1; then \
-		$(UV) run ruff format . ; \
-	elif command -v black >/dev/null 2>&1; then \
-		$(UV) run black . ; \
-	else \
-		echo "No formatter found (install ruff or black)" ; \
-	fi
+	$(UV) run python task.py format
 
 typecheck:
 	@if command -v mypy >/dev/null 2>&1; then \

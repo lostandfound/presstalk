@@ -69,19 +69,30 @@ uv run presstalk run
   - hold: `p` + Enter で開始、`r` + Enter で停止、`q` で終了
   - 注意: 最終化（[PT] Finalizing...）中は終了（q）が無効化されます。
 
-## 7) 推奨設定値
+## 7) タスクランナー（Make不要・推奨）
+Windows/macOS/Linux 共通で `task.py` を利用できます:
+```bash
+uv run python task.py install
+uv run python task.py test
+uv run python task.py simulate --chunks hello world --delay-ms 40
+uv run python task.py run          # グローバルホットキー
+uv run python task.py run --console
+uv run python task.py clean
+```
+
+## 8) 推奨設定値
 - 言語: `--language ja`
 - モデル: `--model small`（既定）
 - プリバッファ: `--prebuffer-ms 0..300`（押下直後の欠け対策。0 で無効）
 - 最小録音時間: `--min-capture-ms 1800`（短押し対策）
 
-## 8) トラブルシュート
+## 9) トラブルシュート
 - `sounddevice` エラー: `brew install portaudio` → `uv pip install sounddevice` 再試行
 - モデル初回が遅い: 初回ダウンロード/キャッシュのため。2回目以降は高速化。
 - 貼り付かない: アクセシビリティ許可、最前面アプリのテキスト入力フォーカスを確認。
 - 短すぎて結果が出ない: `--min-capture-ms 2000`、`--prebuffer-ms 200..300` を試す。
 
-## 9) Linux の注意事項
+## 10) Linux の注意事項
 - 推奨パッケージ（Debian/Ubuntu 例）:
 ```bash
 sudo apt-get update && sudo apt-get install -y \
@@ -94,7 +105,7 @@ sudo apt-get install -y wl-clipboard
 - セットアップ自体は macOS/Windows と同様に venv 作成→ `uv pip install -e .` → `simulate`/`run --console`。
 - ペーストガードの既定には一般的な Linux ターミナルが含まれます。YAML の `paste_blocklist:` か `PT_PASTE_BLOCKLIST` で上書き可能。
 
-## 10) 環境変数での既定値（任意）
+## 11) 環境変数での既定値（任意）
 CLI引数の代わりに以下も利用可能（`src/presstalk/config.py`参照）:
 - `PT_LANGUAGE`（既定: `ja`）
 - `PT_SAMPLE_RATE`（既定: `16000`）
@@ -103,14 +114,14 @@ CLI引数の代わりに以下も利用可能（`src/presstalk/config.py`参照�
 - `PT_MIN_CAPTURE_MS`（既定: `1800`）
 - `PT_MODEL`（既定: `small`）
 
-## 10) 既知の制限と今後
+## 12) 既知の制限と今後
 - グローバルホットキーと貼り付けガードは実装済み（既定で有効）。
 - ダイアライゼーションや逐次確定は今後の拡張対象。
 
 ---
 困ったら `uv run presstalk simulate` の結果とエラーメッセージを共有してください。最小の再現手順からサポートします。
 
-## 11) グローバルホットキー（既定）
+## 13) グローバルホットキー（既定）
 - 既定でグローバルホットキーが有効です（`--console` を付けると対話モード）。
 - 実行例（Ctrlを押している間だけ録音）:
 ```bash
@@ -119,7 +130,7 @@ uv run presstalk run --mode hold --hotkey ctrl --language ja --model small --pre
 - ホットキー指定例: `ctrl` / `cmd` / `alt` / `space` / 文字キー（例: `a`）
 - 注意: macOS ではアクセシビリティ許可が必要です（Terminalを有効に）。
 
-## 12) 貼り付けガード（Terminal/iTerm を避ける）
+## 14) 貼り付けガード（Terminal/iTerm を避ける）
 - 既定で、最前面アプリが Terminal/iTerm の場合は自動貼り付けを抑止します。
 - 制御は環境変数で可能:
   - `PT_PASTE_GUARD=1`（既定1=有効、0で無効）
