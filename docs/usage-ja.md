@@ -47,6 +47,7 @@ paste_blocklist:
   - iTerm2
   - com.apple.Terminal
   - com.googlecode.iterm2
+show_logo: true
 ```
 
 ## 5) 動作確認（ダミー）

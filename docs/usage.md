@@ -45,6 +45,7 @@ paste_blocklist:
   - iTerm2
   - com.apple.Terminal
   - com.googlecode.iterm2
+show_logo: true
 ```
 
 ## 5) Quick Check (Simulated)
@@ -83,4 +84,3 @@ Type `p` + Enter to press, `r` + Enter to release, `q` to quit.
 - `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`
 
 Note: Docker is not supported for runtime (device/GUI constraints).
-

@@ -1,5 +1,6 @@
 import argparse
 import time
+import os
 
 from .config import Config
 from .ring_buffer import RingBuffer
@@ -9,6 +10,7 @@ from .orchestrator import Orchestrator
 from .paste_macos import insert_text
 from .engine.dummy_engine import DummyAsrEngine
 from .logger import get_logger, Logger, QUIET, INFO, DEBUG
+from .logo import print_logo
 
 
 def _build_run_orchestrator(cfg: Config) -> Orchestrator:
@@ -144,6 +146,9 @@ def main():
         if not cfg_path and os.path.isfile("presstalk.yaml"):
             cfg_path = "presstalk.yaml"
         cfg = Config(config_path=cfg_path)
+        # banner
+        if getattr(cfg, 'show_logo', True):
+            print_logo(use_color=True, style=getattr(cfg, 'logo_style', 'simple'))
         bps = cfg.bytes_per_second
         pre_bytes = int(bps * (cfg.prebuffer_ms / 1000.0))
         ring = RingBuffer(max(1, pre_bytes or 1))
@@ -166,6 +171,9 @@ def main():
         if not cfg_path and os.path.isfile("presstalk.yaml"):
             cfg_path = "presstalk.yaml"
         cfg = Config(config_path=cfg_path)
+        # banner
+        if getattr(cfg, 'show_logo', True):
+            print_logo(use_color=True, style=getattr(cfg, 'logo_style', 'simple'))
         if args.language:
             cfg.language = args.language
         if args.model:
