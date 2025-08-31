@@ -12,3 +12,6 @@ __pycache__/
 
 # Virtual envs
 .venv/
+
+# Local Claude configuration
+CLAUDE.local.md
