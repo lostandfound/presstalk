@@ -112,3 +112,6 @@ uv run presstalk run --mode hold --hotkey ctrl --language ja --model small --pre
   - `PT_PASTE_GUARD=1`（既定1=有効、0で無効）
   - `PT_PASTE_BLOCKLIST="Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"`
     - アプリ名/Bundle ID の部分一致で判定（カンマ区切りで追加可能）
+  - 既定ブロックリスト（OS別）:
+    - macOS: `Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2`
+    - Windows: `cmd.exe,powershell.exe,pwsh.exe,WindowsTerminal.exe,wt.exe,conhost.exe`

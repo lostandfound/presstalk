@@ -83,4 +83,9 @@ Type `p` + Enter to press, `r` + Enter to release, `q` to quit.
 - `PT_LANGUAGE`, `PT_SAMPLE_RATE`, `PT_CHANNELS`, `PT_PREBUFFER_MS`, `PT_MIN_CAPTURE_MS`, `PT_MODEL`
 - `PT_PASTE_GUARD`, `PT_PASTE_BLOCKLIST`
 
+### Paste Guard defaults
+- macOS default blocklist: `Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2`
+- Windows default blocklist: `cmd.exe,powershell.exe,pwsh.exe,WindowsTerminal.exe,wt.exe,conhost.exe`
+You can override with YAML `paste_blocklist:` or `PT_PASTE_BLOCKLIST`.
+
 Note: Docker is not supported for runtime (device/GUI constraints).
