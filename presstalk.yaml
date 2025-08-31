@@ -26,5 +26,5 @@ paste_blocklist:     # names or bundle IDs (case‑insensitive substring match)
   - iTerm2
   - com.apple.Terminal
   - com.googlecode.iterm2
-\n+# UI
 show_logo: true
+logo_style: standard  # standard (ASCII art) or simple

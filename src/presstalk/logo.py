@@ -12,24 +12,25 @@ def render_logo(color: bool = True, style: str = "simple") -> str:
     if style == "standard":
         # Clearer figlet-style ASCII for "PressTalk"
         art = [
-            r"  ____                 _____         _ _    ",
-            r" |  _ \ _ __ ___  ___ |_   _|__  ___| | | __",
-            r" | |_) | '__/ _ \/ _ \  | |/ _ \/ __| | |/ /",
-            r" |  __/| | |  __/  __/  | |  __/\__ \ |   < ",
-            r" |_|   |_|  \___|\___|  |_|\___||___/_|_|\_\",
+            r" ____                   _____     _ _    ",
+            r"|  _ \ _ __ ___  ___ __|_   _|_ _| | | __",
+            r"| |_) | '__/ _ \/ __/ __|| |/ _` | | |/ /",
+            r"|  __/| | |  __/\__ \__ \| | (_| | |   < ",
+            r"|_|   |_|  \___||___/___/|_|\__,_|_|_|\_\\",
         ]
-        title = "   PressTalk"
         if not color:
-            return "\n".join(art + [title])
+            # ASCII art + single plain wordmark
+            word = "PressTalk"
+            underline = "=" * len(word)
+            return "\n".join(art + [word, underline])
         c1, c2 = ANSI_CYAN, ANSI_MAGENTA
         lines = []
         for i, ln in enumerate(art):
             c = c1 if i % 2 == 0 else c2
             lines.append(f"{c}{ANSI_BOLD}{ln}{ANSI_RESET}")
-        # Add a clear wordmark under the ASCII art for readability
+        # Add a clear wordmark under the ASCII art for readability (single occurrence)
         word = "PressTalk"
         underline = "=" * len(word)
-        lines.append(f"{ANSI_BOLD}{title}{ANSI_RESET}")
         lines.append(f"{ANSI_BOLD}{ANSI_MAGENTA}{word}{ANSI_RESET}")
         lines.append(f"{ANSI_WHITE}{underline}{ANSI_RESET}")
         return "\n".join(lines)
