@@ -45,6 +45,11 @@ class Config:
         # OS-specific default paste guard blocklist
         if os.name == 'nt' or sys.platform == 'win32':  # type: ignore[name-defined]
             pblock = "cmd.exe,powershell.exe,pwsh.exe,WindowsTerminal.exe,wt.exe,conhost.exe"
+        elif sys.platform.startswith('linux'):
+            pblock = (
+                "gnome-terminal,org.gnome.Terminal,konsole,xterm,alacritty,kitty,"
+                "wezterm,terminator,tilix,xfce4-terminal,lxterminal,io.elementary.terminal"
+            )
         else:
             pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
         slog = True

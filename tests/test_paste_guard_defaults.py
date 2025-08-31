@@ -44,6 +44,24 @@ class TestPasteGuardDefaults(unittest.TestCase):
         finally:
             sys.platform = real
 
+    def test_linux_default_blocklist(self):
+        real = sys.platform
+        try:
+            sys.platform = 'linux'
+            cfg = Config()
+            bl = cfg.paste_blocklist
+            if isinstance(bl, str):
+                bl = [s.strip().lower() for s in bl.split(',') if s.strip()]
+            joined = ','.join(bl)
+            # expect a common terminal to be present
+            self.assertTrue(
+                any(k in joined for k in [
+                    'gnome-terminal','konsole','xterm','alacritty','kitty','wezterm','terminator','tilix'
+                ])
+            )
+        finally:
+            sys.platform = real
+
     def test_env_overrides_defaults_always(self):
         real = sys.platform
         try:

@@ -36,9 +36,14 @@ class TestPasteDispatch(unittest.TestCase):
         paste = _reload_paste('win32')
         self.assertIs(paste.insert_text, win_mod.insert_text)
 
+    def test_dispatch_linux_uses_linux_impl(self):
+        lin_mod = importlib.import_module('presstalk.paste_linux')
+        paste = _reload_paste('linux')
+        self.assertIs(paste.insert_text, lin_mod.insert_text)
+
     def test_dispatch_other_platforms_fallback_to_macos(self):
         mac_mod = importlib.import_module('presstalk.paste_macos')
-        paste = _reload_paste('linux')
+        paste = _reload_paste('freebsd')
         self.assertIs(paste.insert_text, mac_mod.insert_text)
 
 
