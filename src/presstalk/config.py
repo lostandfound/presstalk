@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 import sys
 from typing import Optional, Any, Dict
+from .constants import is_env_enabled
 
 try:
     import yaml  # type: ignore
@@ -32,7 +33,11 @@ class Config:
 
     def __post_init__(self):
         data = self._load_yaml(self.config_path)
-        # base defaults
+        defaults = self._get_defaults()
+        envs = self._load_env()
+        self._apply_overrides(defaults, data or {}, envs)
+
+    def _get_defaults(self) -> Dict[str, Any]:
         lang = "ja"
         sr = 16000
         ch = 1
@@ -54,71 +59,114 @@ class Config:
             pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
         slog = True
         lstyle = "standard"
-        # overlay YAML
-        if data:
-            lang = data.get("language", lang)
-            sr = int(data.get("sample_rate", sr))
-            ch = int(data.get("channels", ch))
-            pre = int(data.get("prebuffer_ms", pre))
-            mincap = int(data.get("min_capture_ms", mincap))
-            mdl = data.get("model", mdl)
-            mde = data.get("mode", mde)
-            hk = data.get("hotkey", hk)
-            if "paste_guard" in data:
-                try:
-                    pguard = bool(data.get("paste_guard"))
-                except Exception:
-                    pass
-            if "paste_blocklist" in data:
-                pblock = data.get("paste_blocklist", pblock)
-            if "show_logo" in data:
-                try:
-                    slog = bool(data.get("show_logo"))
-                except Exception:
-                    pass
-            if "logo_style" in data:
-                try:
-                    lstyle = str(data.get("logo_style")) or lstyle
-                except Exception:
-                    pass
-        # overlay ENV
-        lang = os.getenv("PT_LANGUAGE", lang)
-        sr = int(os.getenv("PT_SAMPLE_RATE", str(sr)))
-        ch = int(os.getenv("PT_CHANNELS", str(ch)))
-        pre = int(os.getenv("PT_PREBUFFER_MS", str(pre)))
-        mincap = int(os.getenv("PT_MIN_CAPTURE_MS", str(mincap)))
-        mdl = os.getenv("PT_MODEL", mdl)
+        return {
+            'language': lang,
+            'sample_rate': sr,
+            'channels': ch,
+            'prebuffer_ms': pre,
+            'min_capture_ms': mincap,
+            'model': mdl,
+            'mode': mde,
+            'hotkey': hk,
+            'paste_guard': pguard,
+            'paste_blocklist': pblock,
+            'show_logo': slog,
+            'logo_style': lstyle,
+        }
+
+    def _load_env(self) -> Dict[str, Any]:
+        out: Dict[str, Any] = {}
+        if (v := os.getenv("PT_LANGUAGE")) is not None:
+            out['language'] = v
+        if (v := os.getenv("PT_SAMPLE_RATE")) is not None:
+            try:
+                out['sample_rate'] = int(v)
+            except Exception:
+                pass
+        if (v := os.getenv("PT_CHANNELS")) is not None:
+            try:
+                out['channels'] = int(v)
+            except Exception:
+                pass
+        if (v := os.getenv("PT_PREBUFFER_MS")) is not None:
+            try:
+                out['prebuffer_ms'] = int(v)
+            except Exception:
+                pass
+        if (v := os.getenv("PT_MIN_CAPTURE_MS")) is not None:
+            try:
+                out['min_capture_ms'] = int(v)
+            except Exception:
+                pass
+        if (v := os.getenv("PT_MODEL")) is not None:
+            out['model'] = v
         # paste guard envs
-        env_guard = os.getenv("PT_PASTE_GUARD")
-        if env_guard is not None:
-            pguard = env_guard not in ("0", "false", "False")
-        pblock = os.getenv("PT_PASTE_BLOCKLIST", pblock)
-        env_logo = os.getenv("PT_NO_LOGO")
-        if env_logo is not None:
-            # PT_NO_LOGO=1 disables logo
-            slog = False if env_logo not in ("0", "false", "False") else slog
-        env_style = os.getenv("PT_LOGO_STYLE")
-        if env_style:
-            lstyle = env_style
-        # assign with explicit overrides last
-        self.language = self.language or lang
-        self.sample_rate = int(self.sample_rate or sr)
-        self.channels = int(self.channels or ch)
-        self.prebuffer_ms = int(self.prebuffer_ms or pre)
-        self.min_capture_ms = int(self.min_capture_ms or mincap)
-        self.model = self.model or mdl
-        # ui (no env vars defined; YAML or explicit only)
-        self.mode = self.mode or mde
-        self.hotkey = self.hotkey or hk
-        # paste
+        if (v := os.getenv("PT_PASTE_GUARD")) is not None:
+            out['paste_guard'] = is_env_enabled(v)
+        if (v := os.getenv("PT_PASTE_BLOCKLIST")) is not None:
+            out['paste_blocklist'] = v
+        if (v := os.getenv("PT_NO_LOGO")) is not None:
+            out['show_logo'] = not is_env_enabled(v)
+        if (v := os.getenv("PT_LOGO_STYLE")) is not None:
+            out['logo_style'] = v
+        return out
+
+    def _apply_overrides(self, defaults: Dict[str, Any], yaml_data: Dict[str, Any], env_data: Dict[str, Any]) -> None:
+        # Start from defaults
+        vals: Dict[str, Any] = dict(defaults)
+        # YAML overlay with basic typing coercion where used previously
+        if yaml_data:
+            def pick_int(name, cur):
+                try:
+                    return int(yaml_data.get(name, cur))
+                except Exception:
+                    return cur
+            vals['language'] = yaml_data.get('language', vals['language'])
+            vals['sample_rate'] = pick_int('sample_rate', vals['sample_rate'])
+            vals['channels'] = pick_int('channels', vals['channels'])
+            vals['prebuffer_ms'] = pick_int('prebuffer_ms', vals['prebuffer_ms'])
+            vals['min_capture_ms'] = pick_int('min_capture_ms', vals['min_capture_ms'])
+            vals['model'] = yaml_data.get('model', vals['model'])
+            vals['mode'] = yaml_data.get('mode', vals['mode'])
+            vals['hotkey'] = yaml_data.get('hotkey', vals['hotkey'])
+            if 'paste_guard' in yaml_data:
+                try:
+                    vals['paste_guard'] = bool(yaml_data.get('paste_guard'))
+                except Exception:
+                    pass
+            if 'paste_blocklist' in yaml_data:
+                vals['paste_blocklist'] = yaml_data.get('paste_blocklist', vals['paste_blocklist'])
+            if 'show_logo' in yaml_data:
+                try:
+                    vals['show_logo'] = bool(yaml_data.get('show_logo'))
+                except Exception:
+                    pass
+            if 'logo_style' in yaml_data:
+                try:
+                    ls = str(yaml_data.get('logo_style'))
+                    vals['logo_style'] = ls or vals['logo_style']
+                except Exception:
+                    pass
+        # ENV overlay
+        for k, v in env_data.items():
+            vals[k] = v
+        # Assign to self when not explicitly set
+        self.language = self.language or vals['language']
+        self.sample_rate = int(self.sample_rate or vals['sample_rate'])
+        self.channels = int(self.channels or vals['channels'])
+        self.prebuffer_ms = int(self.prebuffer_ms or vals['prebuffer_ms'])
+        self.min_capture_ms = int(self.min_capture_ms or vals['min_capture_ms'])
+        self.model = self.model or vals['model']
+        self.mode = self.mode or vals['mode']
+        self.hotkey = self.hotkey or vals['hotkey']
         if self.paste_guard is None:
-            self.paste_guard = pguard
+            self.paste_guard = vals['paste_guard']
         if self.paste_blocklist is None:
-            self.paste_blocklist = pblock
+            self.paste_blocklist = vals['paste_blocklist']
         if self.show_logo is None:
-            self.show_logo = slog
+            self.show_logo = vals['show_logo']
         if self.logo_style is None:
-            self.logo_style = lstyle
+            self.logo_style = vals['logo_style']
 
     @property
     def bytes_per_second(self) -> int:
