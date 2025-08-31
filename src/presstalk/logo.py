@@ -28,7 +28,8 @@ def render_logo(color: bool = True) -> str:
 
 def print_logo(use_color: bool = True) -> None:
     try:
+        # Print logo followed by a blank line for spacing
         print(render_logo(color=use_color))
+        print()
     except Exception:
         pass
-
