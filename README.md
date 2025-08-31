@@ -21,6 +21,13 @@ Tips:
 - On first run, macOS prompts for Microphone and Accessibility permissions.
 - Hold the chosen key (e.g., `ctrl`) to record; release to finalize and paste.
 
+## Makefile Shortcuts
+- `make venv && source .venv/bin/activate && make install`
+- `make run` / `make console`
+- `make simulate CHUNKS="hello world" DELAY=40`
+- `make test` / `make test-file FILE=tests/test_controller.py`
+- `make lint` / `make format` / `make typecheck`
+
 ## Configuration (YAML)
 - Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, or `~/.presstalk.yaml`.
 - Override path: `uv run presstalk run --config path/to/config.yaml`.
@@ -69,6 +76,8 @@ All runtime dependencies are included by default (pynput, faster-whisper, numpy,
 - Build tools: `xcode-select --install`.
 - Audio backend (only if `sounddevice` build fails): `brew install portaudio`.
 - Permissions: allow Microphone and Accessibility on first run.
+
+Note: Docker is not supported for runtime use (microphone, global hotkeys, and paste require host permissions).
 
 ## Run (examples)
 
