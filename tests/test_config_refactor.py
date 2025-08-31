@@ -23,6 +23,21 @@ class TestConfigRefactorHelpers(unittest.TestCase):
         ]:
             os.environ.pop(k, None)
 
+    def tearDown(self):
+        for k in [
+            "PT_LANGUAGE",
+            "PT_SAMPLE_RATE",
+            "PT_CHANNELS",
+            "PT_PREBUFFER_MS",
+            "PT_MIN_CAPTURE_MS",
+            "PT_MODEL",
+            "PT_PASTE_GUARD",
+            "PT_PASTE_BLOCKLIST",
+            "PT_NO_LOGO",
+            "PT_LOGO_STYLE",
+        ]:
+            os.environ.pop(k, None)
+
     def test_get_defaults_os_blocklist(self):
         c = Config()  # will run __post_init__, but we only call helper below
         real = sys.platform
@@ -107,4 +122,3 @@ class TestConfigRefactorHelpers(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

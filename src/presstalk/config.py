@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 import sys
 from typing import Optional, Any, Dict
+from .constants import is_env_enabled
 
 try:
     import yaml  # type: ignore
@@ -101,11 +102,11 @@ class Config:
             out['model'] = v
         # paste guard envs
         if (v := os.getenv("PT_PASTE_GUARD")) is not None:
-            out['paste_guard'] = v not in ("0", "false", "False")
+            out['paste_guard'] = is_env_enabled(v)
         if (v := os.getenv("PT_PASTE_BLOCKLIST")) is not None:
             out['paste_blocklist'] = v
         if (v := os.getenv("PT_NO_LOGO")) is not None:
-            out['show_logo'] = False if v not in ("0", "false", "False") else True
+            out['show_logo'] = not is_env_enabled(v)
         if (v := os.getenv("PT_LOGO_STYLE")) is not None:
             out['logo_style'] = v
         return out

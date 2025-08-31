@@ -1,5 +1,6 @@
 import os
 from typing import Dict, Optional, Sequence, Union, List
+from .constants import is_env_enabled
 
 
 class PasteGuard:
@@ -18,9 +19,7 @@ class PasteGuard:
         if guard_enabled is not None:
             return bool(guard_enabled)
         env = os.getenv("PT_PASTE_GUARD")
-        if env is not None:
-            return env.lower() not in ("0", "false")
-        return True
+        return is_env_enabled(env, default=True)
 
     @staticmethod
     def _effective_blocklist(
@@ -63,4 +62,3 @@ class PasteGuard:
                 if b in t:
                     return True
         return False
-
