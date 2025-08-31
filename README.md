@@ -2,7 +2,7 @@
 
 Language: [English](README.md) | [日本語](README-ja.md)
 
-Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely locally (no server required).
+Local voice input tool using push‑to‑talk (PTT). Hold a control key to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your Mac (no server).
 
 - Architecture: docs/architecture.md
 - Roadmap: docs/ROADMAP.md
@@ -25,7 +25,14 @@ uv run presstalk run
 ```
 Tips:
 - On first run, macOS prompts for Microphone and Accessibility permissions.
-- Hold the chosen key (e.g., `ctrl`) to record; release to finalize and paste.
+- Hold the chosen key (default `ctrl`) to record. When you release it, PressTalk transcribes locally and pastes the text at your current cursor position in the active app.
+- Paste guard is enabled by default: paste is skipped when Terminal/iTerm is frontmost (configurable).
+
+## What It Does
+- Voice input for any text field: record while holding a key, paste on release.
+- Global hotkey by default (`ctrl`), configurable via YAML or CLI.
+- Offline ASR with faster‑whisper; audio never leaves your device.
+- Paste guard avoids Terminal/iTerm by default; customize via YAML.
 
 ## Makefile Shortcuts
 - `make venv && source .venv/bin/activate && make install`
