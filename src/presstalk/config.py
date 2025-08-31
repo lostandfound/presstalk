@@ -23,6 +23,8 @@ class Config:
     # Paste
     paste_guard: Optional[bool] = None
     paste_blocklist: Optional[Any] = None
+    # UI misc
+    show_logo: Optional[bool] = None
     # Source
     config_path: Optional[str] = None
 
@@ -39,6 +41,7 @@ class Config:
         hk = "ctrl"
         pguard = True
         pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
+        slog = True
         # overlay YAML
         if data:
             lang = data.get("language", lang)
@@ -56,6 +59,11 @@ class Config:
                     pass
             if "paste_blocklist" in data:
                 pblock = data.get("paste_blocklist", pblock)
+            if "show_logo" in data:
+                try:
+                    slog = bool(data.get("show_logo"))
+                except Exception:
+                    pass
         # overlay ENV
         lang = os.getenv("PT_LANGUAGE", lang)
         sr = int(os.getenv("PT_SAMPLE_RATE", str(sr)))
@@ -68,6 +76,10 @@ class Config:
         if env_guard is not None:
             pguard = env_guard not in ("0", "false", "False")
         pblock = os.getenv("PT_PASTE_BLOCKLIST", pblock)
+        env_logo = os.getenv("PT_NO_LOGO")
+        if env_logo is not None:
+            # PT_NO_LOGO=1 disables logo
+            slog = False if env_logo not in ("0", "false", "False") else slog
         # assign with explicit overrides last
         self.language = self.language or lang
         self.sample_rate = int(self.sample_rate or sr)
@@ -83,6 +95,8 @@ class Config:
             self.paste_guard = pguard
         if self.paste_blocklist is None:
             self.paste_blocklist = pblock
+        if self.show_logo is None:
+            self.show_logo = slog
 
     @property
     def bytes_per_second(self) -> int:
