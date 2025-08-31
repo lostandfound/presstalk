@@ -1,5 +1,8 @@
 ## PressTalk CLI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
 言語: [English](README.md) | [日本語](README-ja.md)
 
 音声入力ツール（プッシュトゥトーク, PTT）。コントロールキーを押している間だけ録音し、離すと最前面アプリのカーソル位置に文字起こし結果を貼り付けます。すべてローカルで動作します（サーバ不要）。
