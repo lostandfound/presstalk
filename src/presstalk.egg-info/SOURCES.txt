@@ -7,6 +7,8 @@ src/presstalk/cli.py
 src/presstalk/config.py
 src/presstalk/controller.py
 src/presstalk/hotkey.py
+src/presstalk/hotkey_pynput.py
+src/presstalk/logger.py
 src/presstalk/orchestrator.py
 src/presstalk/paste_macos.py
 src/presstalk/ring_buffer.py
@@ -14,6 +16,7 @@ src/presstalk.egg-info/PKG-INFO
 src/presstalk.egg-info/SOURCES.txt
 src/presstalk.egg-info/dependency_links.txt
 src/presstalk.egg-info/entry_points.txt
+src/presstalk.egg-info/requires.txt
 src/presstalk.egg-info/top_level.txt
 tests/test_capture.py
 tests/test_config.py
@@ -21,6 +24,9 @@ tests/test_controller.py
 tests/test_engine_dummy.py
 tests/test_engine_fwhisper.py
 tests/test_hotkey.py
+tests/test_logger.py
 tests/test_orchestrator.py
 tests/test_paste_macos.py
 tests/test_ring_buffer.py
+tests/test_status_and_timing.py
+tests/test_status_logging.py

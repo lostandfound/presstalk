@@ -15,20 +15,14 @@ source .venv/bin/activate
 ```
 
 ## 2) 依存のインストール（uv）
-- 主要依存をインストール:
 ```bash
-uv pip install sounddevice numpy faster-whisper
+uv pip install -e .
 ```
 - macOSで`sounddevice`が失敗する場合は PortAudio を先に:
 ```bash
 brew install portaudio
 ```
 その後、依存インストールを再実行してください。
-
-- 本パッケージを開発インストール:
-```bash
-uv pip install -e presstalk
-```
 
 ## 3) 権限（macOS）
 - マイク: 初回録音開始時に許可ダイアログ。拒否した場合は、システム設定 → プライバシーとセキュリティ → マイク で Terminal を許可。
@@ -80,14 +74,11 @@ CLI引数の代わりに以下も利用可能（`src/presstalk/config.py`参照�
 ---
 困ったら `uv run presstalk simulate` の結果とエラーメッセージを共有してください。最小の再現手順からサポートします。
 
-## 10) グローバルホットキー（pynput）
-- インストール:
-```bash
-uv pip install pynput
-```
+## 10) グローバルホットキー（既定）
+- 既定でグローバルホットキーが有効です（`--console` を付けると対話モード）。
 - 実行例（Ctrlを押している間だけ録音）:
 ```bash
-uv run presstalk run --mode hold --global-hotkey --hotkey ctrl --language ja --model small --prebuffer-ms 200 --min-capture-ms 1800
+uv run presstalk run --mode hold --hotkey ctrl --language ja --model small --prebuffer-ms 200 --min-capture-ms 1800
 ```
 - ホットキー指定例: `ctrl` / `cmd` / `alt` / `space` / 文字キー（例: `a`）
 - 注意: macOS ではアクセシビリティ許可が必要です（Terminalを有効に）。

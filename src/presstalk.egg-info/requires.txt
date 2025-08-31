@@ -1,0 +1,4 @@
+pynput
+faster-whisper
+numpy
+sounddevice

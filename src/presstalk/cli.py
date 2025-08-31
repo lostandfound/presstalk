@@ -118,9 +118,9 @@ def main():
     sim.add_argument("--chunks", nargs="*", default=["aa", "bb", "cc"], help="List of ASCII chunks to feed (default: aa bb cc)")
     sim.add_argument("--delay-ms", type=int, default=50, help="Delay between chunks (ms)")
 
-    runp = sub.add_parser("run", help="Run local PTT with sounddevice + faster-whisper")
+    runp = sub.add_parser("run", help="Run local PTT (global hotkey by default)")
     runp.add_argument("--mode", choices=["hold", "toggle"], default="hold", help="PTT mode")
-    runp.add_argument("--global-hotkey", action="store_true", help="Use global hotkey via pynput instead of console input")
+    runp.add_argument("--console", action="store_true", help="Use console input instead of global hotkey")
     runp.add_argument("--hotkey", default="ctrl", help="Hotkey key name (ctrl/cmd/alt/space or character)")
     runp.add_argument("--log-level", choices=["QUIET", "INFO", "DEBUG"], default="INFO", help="Logging level")
     runp.add_argument("--language", default=None, help="Override language (e.g., ja)")
@@ -173,7 +173,7 @@ def main():
         lvl = {"QUIET": QUIET, "INFO": INFO, "DEBUG": DEBUG}[args.log_level]
         get_logger().set_level(lvl)
 
-        if args.global_hotkey:
+        if not args.console:
             try:
                 from .hotkey_pynput import GlobalHotkeyRunner
             except Exception as e:
@@ -182,7 +182,7 @@ def main():
             orch = _StatusOrch(orch)
             runner = GlobalHotkeyRunner(orch, mode=args.mode, key_name=args.hotkey)
             runner.start()
-            get_logger().info(f"Global hotkey active: '{args.hotkey}' in {args.mode} mode. Ctrl+C to exit.")
+            get_logger().info(f"Global hotkey active (default): '{args.hotkey}' in {args.mode} mode. Ctrl+C to exit.")
             try:
                 while True:
                     time.sleep(0.2)
@@ -195,7 +195,7 @@ def main():
             orch = _StatusOrch(orch)
             hk = HotkeyHandler(orch, mode=args.mode)
 
-            get_logger().info("PressTalk running (CLI). Commands:")
+            get_logger().info("PressTalk running (console mode). Commands:")
             if args.mode == 'hold':
                 get_logger().info("- Type 'p'+Enter to press, 'r'+Enter to release, 'q'+Enter to quit")
             else:

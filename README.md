@@ -5,23 +5,49 @@ Local push‑to‑talk (PTT) with offline ASR. macOS-oriented, works entirely lo
 - Design: docs/design.md
 - Usage: docs/usage.md
 
+## Quick Start
+
+```bash
+uv venv && source .venv/bin/activate
+uv pip install -e .
+
+# Smoke test (no extra permissions needed)
+uv run presstalk simulate
+
+# Run (global hotkey is default)
+uv run presstalk run
+```
+Tips:
+- On first run, macOS prompts for Microphone and Accessibility permissions.
+- Hold the chosen key (e.g., `ctrl`) to record; release to finalize and paste.
+
+### Console Input mode (optional)
+
+```bash
+uv run presstalk run --console
+```
+- Type `p` then `r` to record/release, `q` to quit (no global hotkey).
+
 ## Install
 
 Recommended with uv (or pip):
 
 ```bash
 # Inside this repo (editable dev install)
-uv pip install -e presstalk[all]
+uv pip install -e .
 
 # Or, when published to PyPI (example)
-# uv pip install presstalk[all]
+# uv pip install presstalk
 ```
 
-Extras:
-- `[engine]` faster-whisper + numpy
-- `[capture]` sounddevice
-- `[hotkey]` pynput
-- `[all]` everything above
+All runtime dependencies are included by default (pynput, faster-whisper, numpy, sounddevice).
+
+## Dependencies
+
+- Python 3.9+ on macOS 13+ recommended.
+- Build tools: `xcode-select --install`.
+- Audio backend (only if `sounddevice` build fails): `brew install portaudio`.
+- Permissions: allow Microphone and Accessibility on first run.
 
 ## Run (examples)
 
@@ -29,7 +55,7 @@ Extras:
 uv run presstalk simulate --chunks hello world --delay-ms 40
 
 uv run presstalk run \
-  --mode hold --global-hotkey --hotkey ctrl \
+  --mode hold \
   --language ja --model small --prebuffer-ms 200 --min-capture-ms 1800
 ```
 
