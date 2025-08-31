@@ -32,6 +32,15 @@ Tips:
 - `make test` / `make test-file FILE=tests/test_controller.py`
 - `make lint` / `make format` / `make typecheck`
 
+## リポジトリに移動せずに起動する（No‑CD Setup）
+- 一発セットアップ（uv/pipx/venv を自動判別）:
+  - `make bootstrap`
+  - 以後はどこからでも: `presstalk run`（または `pt` エイリアス）
+- グローバルインストール（uv）:
+  - `make install-global` 実行後、`~/.local/bin` を PATH に追加（`make path-zsh` か `make path-bash`）
+- いま即起動（インストール不要・リポジトリから実行）:
+  - `make run-anywhere`
+
 ## 依存関係
 - Python 3.9+（macOS 13+ 推奨）
 - 開発ツール: `xcode-select --install`
