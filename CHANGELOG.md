@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-08-31
+
+### Added
+- **Complete Linux support**: Full platform compatibility alongside macOS and Windows
+- Linux-specific paste implementation with X11 and Wayland compatibility
+  - Clipboard management: wl-copy (Wayland) → xclip → xsel priority
+  - Keystroke injection: pynput → xdotool fallback
+  - Frontmost app detection for paste guard (X11: xdotool+xprop, Wayland: swaymsg)
+- Linux-specific paste guard defaults for common terminals
+  - gnome-terminal, org.gnome.Terminal, konsole, xterm, alacritty, kitty, wezterm, terminator, tilix, xfce4-terminal, lxterminal, io.elementary.terminal
+- Comprehensive Linux testing suite
+- Linux setup documentation and platform-specific guidance
+
+### Changed
+- **Stable release**: Promoted from beta to stable after successful cross-platform validation
+- Enhanced platform abstraction layer for three-platform support
+- Documentation updated to reflect complete cross-platform capabilities
+
+### Technical Implementation
+- Added `src/presstalk/paste_linux.py` with comprehensive Linux implementation
+- Enhanced platform dispatcher for Linux detection (`sys.platform.startswith('linux')`)
+- Extended `src/presstalk/config.py` with Linux-specific defaults
+- Added Linux-specific test coverage (`tests/test_paste_linux.py`)
+- Updated package classifiers for Linux support
+
+### Notes
+- **Major Milestone**: Complete cross-platform support for macOS, Windows, and Linux
+- All platform-specific implementations maintain consistent API
+- Comprehensive testing and documentation across all platforms
+- Production-ready for all major desktop operating systems
+
 ## [0.1.0-beta.1] - 2025-09-01
 
 ### Added
@@ -55,5 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS only (Windows support planned for v0.0.3)
 - Requires Microphone and Accessibility permissions on first run
 
-[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/lostandfound/presstalk/compare/v0.1.0-beta.1...v0.1.0
+[0.1.0-beta.1]: https://github.com/lostandfound/presstalk/compare/v0.0.1...v0.1.0-beta.1
 [0.0.1]: https://github.com/lostandfound/presstalk/releases/tag/v0.0.1

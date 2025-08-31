@@ -4,25 +4,21 @@
 
 Features that have been successfully implemented and released.
 
-### Cross-platform Support (Windows) - Completed in v0.1.0-beta.1
-Full Windows platform support implementation
-- ✅ Platform detection and dispatch (#7) 
+### Cross-platform Support (Complete) - Completed in v0.1.0
+Full cross-platform support for macOS, Windows, and Linux
+- ✅ Platform detection and dispatch (#7)
 - ✅ Windows paste implementation (#6)
+- ✅ Linux paste implementation (#20-25)
 - ✅ OS-specific configuration defaults (#8)
+- ✅ X11 and Wayland compatibility (Linux)
 - ✅ Documentation and setup guides (#5, #9)
+- ✅ Comprehensive testing suite
 - ✅ Packaging improvements (#10)
-- **Status**: Released in v0.1.0-beta.1 (September 2025)
+- **Status**: Released in v0.1.0 (September 2025)
 
 ## Confirmed / In Progress
 
 Features that are decided and currently under development or planned.
-
-### Linux Platform Support
-Implementing Linux platform support as next major milestone
-- Linux paste implementation (X11/Wayland compatibility)
-- Linux-specific audio system integration
-- Package distribution (AppImage, Snap, deb)
-- **Status**: Planning phase
 
 ---
 
