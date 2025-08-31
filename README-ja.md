@@ -11,14 +11,24 @@
 - ロードマップ: docs/ROADMAP.md
 
 ## クイックスタート
+
+まずクローン:
+```bash
+git clone https://github.com/lostandfound/presstalk.git
+cd presstalk
+```
+
+方法A（推奨・No‑CD 一発セットアップ）:
+```bash
+make bootstrap
+# 以後どこからでも
+presstalk run
+```
+
+方法B（プロジェクト内 venv）:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-
-# 動作確認（疑似）
-uv run presstalk simulate
-
-# 実行（既定＝グローバルホットキー）
 uv run presstalk run
 ```
 Tips:

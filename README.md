@@ -13,14 +13,23 @@ Local voice input tool using push‑to‑talk (PTT). Hold a control key to recor
 
 ## Quick Start
 
+Clone first:
+```bash
+git clone https://github.com/lostandfound/presstalk.git
+cd presstalk
+```
+
+Option A — No-CD (recommended, 1-step setup):
+```bash
+make bootstrap
+# then from anywhere
+presstalk run
+```
+
+Option B — Project-local venv:
 ```bash
 uv venv && source .venv/bin/activate
 uv pip install -e .
-
-# Smoke test (no extra permissions needed)
-uv run presstalk simulate
-
-# Run (global hotkey is default)
 uv run presstalk run
 ```
 Tips:
@@ -40,6 +49,15 @@ Tips:
 - `make simulate CHUNKS="hello world" DELAY=40`
 - `make test` / `make test-file FILE=tests/test_controller.py`
 - `make lint` / `make format` / `make typecheck`
+
+## No-CD Setup (Run from anywhere)
+- One-shot setup (auto-detects uv/pipx/venv):
+  - `make bootstrap`
+  - Then run globally: `presstalk run` (or `pt` if alias was added)
+- Quick global install (uv):
+  - `make install-global` and ensure `~/.local/bin` is in PATH (`make path-zsh` or `make path-bash`)
+- Run now without install (from repo):
+  - `make run-anywhere`
 
 ## Configuration (YAML)
 - Auto-discovery: `./presstalk.yaml`, `$XDG_CONFIG_HOME/presstalk/config.yaml`, or `~/.presstalk.yaml`.
