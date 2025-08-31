@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+import sys
 from typing import Optional, Any, Dict
 
 try:
@@ -41,7 +42,11 @@ class Config:
         mde = "hold"
         hk = "ctrl"
         pguard = True
-        pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
+        # OS-specific default paste guard blocklist
+        if os.name == 'nt' or sys.platform == 'win32':  # type: ignore[name-defined]
+            pblock = "cmd.exe,powershell.exe,pwsh.exe,WindowsTerminal.exe,wt.exe,conhost.exe"
+        else:
+            pblock = "Terminal,iTerm2,com.apple.Terminal,com.googlecode.iterm2"
         slog = True
         lstyle = "standard"
         # overlay YAML
