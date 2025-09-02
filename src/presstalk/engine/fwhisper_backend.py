@@ -48,6 +48,9 @@ class FasterWhisperBackend:
             kwargs["device"] = self._device
         if self._compute_type:
             kwargs["compute_type"] = self._compute_type
+        else:
+            # Default to float32 to avoid ctranslate2 warnings about float16 conversion
+            kwargs["compute_type"] = "float32"
             
         try:
             self._model = WhisperModel(self._model_name, **kwargs)
