@@ -129,3 +129,8 @@ uv run python -m unittest -v
 uv run presstalk simulate --chunks hello world --delay-ms 40
 uv run presstalk run
 ```
+
+## See Also
+
+- [Release Process](RELEASE.md) - Version numbering, planning, and complete release workflow
+- [Architecture Overview](../architecture.md) - Technical system design and components

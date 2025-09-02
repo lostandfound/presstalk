@@ -1,10 +1,11 @@
 from typing import Optional
+import sys
 
 
 class FasterWhisperBackend:
-    """Lazy-loading backend for faster-whisper.
+    """Backend for faster-whisper with preloaded models.
 
-    Note: This module avoids importing heavy deps until transcribe() is called.
+    Note: This module loads models during initialization for better user experience.
     It expects 16kHz mono PCM s16le bytes and returns a concatenated text.
     """
 
@@ -15,32 +16,52 @@ class FasterWhisperBackend:
         device: Optional[str] = None,
         compute_type: Optional[str] = None,
         beam_size: int = 1,
+        show_progress: bool = False,
     ) -> None:
         self._model_name = model
         self._device = device
         self._compute_type = compute_type
         self._beam_size = int(beam_size)
+        self._show_progress = show_progress
         self._model = None
+        
+        # Load model during initialization instead of lazy loading
+        self._ensure_model()
 
     def _ensure_model(self):
         if self._model is not None:
             return
+        
+        # Show progress if requested
+        if self._show_progress:
+            print(f"Loading ASR model ({self._model_name})...", end="", flush=True)
+            
         try:
             from faster_whisper import WhisperModel  # type: ignore
         except Exception as e:
+            if self._show_progress:
+                print(" FAILED")
             raise RuntimeError("faster-whisper is not installed") from e
+            
         kwargs = {}
         if self._device:
             kwargs["device"] = self._device
         if self._compute_type:
             kwargs["compute_type"] = self._compute_type
-        self._model = WhisperModel(self._model_name, **kwargs)
+            
+        try:
+            self._model = WhisperModel(self._model_name, **kwargs)
+            if self._show_progress:
+                print(" Ready!")
+        except Exception as e:
+            if self._show_progress:
+                print(" FAILED")
+            raise RuntimeError(f"Failed to load model '{self._model_name}': {e}") from e
 
     def transcribe(self, pcm_bytes: bytes, *, sample_rate: int, language: str, model: str) -> str:
         if not pcm_bytes:
             return ""
-        # load model lazily; ignore per-call model override for simplicity
-        self._ensure_model()
+        # Model is already loaded during initialization
         try:
             import numpy as np  # type: ignore
         except Exception as e:
@@ -61,4 +82,3 @@ class FasterWhisperBackend:
             if t:
                 texts.append(t.strip())
         return " ".join(texts).strip()
-
