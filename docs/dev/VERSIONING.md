@@ -33,12 +33,11 @@ For testing releases before official versions:
 
 ## Version Sources
 
-Version information must be updated in these locations:
+Version information has a single source of truth:
 
-1. `pyproject.toml` - Primary version source
-2. `src/presstalk/cli.py` - CLI version display (to be refactored)
+1. `pyproject.toml` - Primary and only version source
 
-Future improvement: Implement single source of truth using `__version__` in `src/presstalk/__init__.py`
+The version is automatically retrieved using `importlib.metadata` in `src/presstalk/__init__.py`, eliminating the need for manual synchronization across multiple files.
 
 ## Release Process
 
@@ -48,7 +47,7 @@ Future improvement: Implement single source of truth using `__version__` in `src
 # Ensure all tests pass
 make test
 
-# Update version in pyproject.toml and cli.py
+# Update version in pyproject.toml only
 # Example: 0.0.2 → 0.0.3
 
 # Update CHANGELOG.md (create if not exists)
@@ -58,7 +57,7 @@ make test
 ### 2. Create Release Commit
 
 ```bash
-git add pyproject.toml src/presstalk/cli.py CHANGELOG.md
+git add pyproject.toml CHANGELOG.md
 git commit -m "Release v0.0.3"
 ```
 
