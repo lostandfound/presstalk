@@ -6,9 +6,15 @@ ANSI_WHITE = "\x1b[37m"
 
 
 def render_logo(color: bool = True, style: str = "simple") -> str:
-    """Render the PressTalk logo.
+    """Render the PressTalk logo with version number.
     style: 'simple' (clear text) or 'standard' (ASCII art)
     """
+    # Import version here to avoid circular imports
+    try:
+        from . import __version__
+        version_suffix = f" v{__version__}"
+    except ImportError:
+        version_suffix = ""
     if style == "standard":
         # Clearer figlet-style ASCII for "PressTalk"
         art = [
@@ -20,7 +26,7 @@ def render_logo(color: bool = True, style: str = "simple") -> str:
         ]
         if not color:
             # ASCII art + single plain wordmark
-            word = "PressTalk"
+            word = f"PressTalk{version_suffix}"
             underline = "=" * len(word)
             return "\n".join(art + [word, underline])
         c1, c2 = ANSI_CYAN, ANSI_MAGENTA
@@ -29,14 +35,14 @@ def render_logo(color: bool = True, style: str = "simple") -> str:
             c = c1 if i % 2 == 0 else c2
             lines.append(f"{c}{ANSI_BOLD}{ln}{ANSI_RESET}")
         # Add a clear wordmark under the ASCII art for readability (single occurrence)
-        word = "PressTalk"
+        word = f"PressTalk{version_suffix}"
         underline = "=" * len(word)
         lines.append(f"{ANSI_BOLD}{ANSI_MAGENTA}{word}{ANSI_RESET}")
         lines.append(f"{ANSI_WHITE}{underline}{ANSI_RESET}")
         return "\n".join(lines)
 
     # simple style (default): clear, unambiguous wordmark
-    word = "PressTalk"
+    word = f"PressTalk{version_suffix}"
     underline = "=" * len(word)
     if not color:
         return f"{word}\n{underline}"
