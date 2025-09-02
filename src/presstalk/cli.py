@@ -20,14 +20,14 @@ def _build_run_orchestrator(cfg: Config) -> Orchestrator:
     pre_bytes = int(cfg.bytes_per_second * (cfg.prebuffer_ms / 1000.0))
     ring = RingBuffer(max(1, pre_bytes or 1))
 
-    # Engine backend (lazy heavy deps)
+    # Engine backend with progress display
     try:
         from .engine.fwhisper_backend import FasterWhisperBackend
         from .engine.fwhisper_engine import FasterWhisperEngine
     except Exception as e:
         raise RuntimeError(f"engine modules unavailable: {e}")
 
-    backend = FasterWhisperBackend(model=cfg.model)
+    backend = FasterWhisperBackend(model=cfg.model, show_progress=True)
     engine = FasterWhisperEngine(sample_rate=cfg.sample_rate, language=cfg.language, model=cfg.model, backend=backend)
 
     # Capture source (sounddevice)
@@ -208,7 +208,7 @@ def _run_ptt(args) -> int:
         orch = _StatusOrch(orch)
         runner = GlobalHotkeyRunner(orch, mode=effective_mode, key_name=effective_hotkey)
         runner.start()
-        get_logger().info(f"Global hotkey active (default): '{effective_hotkey}' in {effective_mode} mode. Ctrl+C to exit.")
+        get_logger().info(f"✓ Ready for voice input (press {effective_hotkey} to start)")
         try:
             while True:
                 time.sleep(0.2)
@@ -220,7 +220,7 @@ def _run_ptt(args) -> int:
     # console mode
     orch = _StatusOrch(orch)
     hk = HotkeyHandler(orch, mode=effective_mode)
-    get_logger().info("PressTalk running (console mode). Commands:")
+    get_logger().info("✓ Ready for voice input (console mode). Commands:")
     if effective_mode == 'hold':
         get_logger().info("- Type 'p'+Enter to press, 'r'+Enter to release, 'q'+Enter to quit")
     else:
