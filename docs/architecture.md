@@ -11,6 +11,9 @@
 - Config (`src/presstalk/config.py`): Merges YAML → ENV → CLI with defaults. YAML auto-discovery and `--config` path supported.
 - Capture (`src/presstalk/capture.py`, `capture_sd.py`): Pull-based PCM source (CoreAudio via `sounddevice`).
 - Engine (`src/presstalk/engine/*`): `FasterWhisperBackend` + `FasterWhisperEngine` implement `AsrEngine` protocol.
+  - Model options: `tiny`/`base`/`small`/`medium`/`large`/`large-v3` (speed vs accuracy tradeoff)
+  - Language support: 99 languages including Japanese (`ja`) and English (`en`)
+  - Lazy loading: Models downloaded on first use, cached locally
 - Controller (`src/presstalk/controller.py`): Press/Release state machine, prebuffer push, live push, and finalize.
 - Orchestrator (`src/presstalk/orchestrator.py`): Coordinates capture lifecycle and pasting.
 - Paste (`src/presstalk/paste.py`): platform-dispatching `insert_text`.
@@ -35,6 +38,17 @@ class RingBuffer:
 - YAML keys: `language`, `model`, `sample_rate`, `channels`, `prebuffer_ms`, `min_capture_ms`, `mode`, `hotkey`, `paste_guard`, `paste_blocklist`.
 - Precedence: CLI > Env (`PT_*`) > YAML > built-ins.
 - Local `presstalk.yaml` is auto-used if present; otherwise XDG/Home is probed.
+
+### Model Selection Guidelines
+| Model | Speed | Accuracy | Memory* | Use Case |
+|-------|-------|----------|---------|----------|
+| `tiny` | Fastest | Lowest | ~40MB | Quick testing, resource-constrained |
+| `base` | Fast | Good | ~75MB | Development, fast feedback |
+| `small` | Balanced | Very Good | ~245MB | **Recommended default** |
+| `medium` | Slower | Excellent | ~770MB | High accuracy needs |
+| `large-v3` | Slowest | Best | ~1.5GB | Production, maximum precision |
+
+*Memory usage shown is for CPU execution with faster-whisper optimization. GPU usage would be higher.
 
 ## Logging & UX
 - `_StatusOrch` provides minimal status logs: Recording / Finalizing / Stats / Engine time.
