@@ -82,6 +82,8 @@ uv run presstalk run --console
 - Usage: docs/usage.md (Windows/macOS/Linux notes, YAML config, Makefile wrapper)
 - 日本語: docs/usage-ja.md
 - Commands: docs/commands.md
+- Architecture: docs/architecture.md
+- Development: docs/dev/RELEASE.md (release process), docs/dev/GITHUB.md (workflow)
 
 ## Dependencies
 
