@@ -4,6 +4,15 @@
 
 Features that have been successfully implemented and released.
 
+### Performance and User Experience Improvements - Completed in v0.1.2
+Startup optimization and version management enhancements
+- ✅ Startup model preloading: Eliminated 30s-2min delay on first voice recognition (#46)
+- ✅ Progress display during model loading for better user feedback
+- ✅ Dynamic version display in application logo
+- ✅ Version consistency improvements using importlib.metadata
+- ✅ Enhanced user experience with immediate readiness after startup
+- **Status**: Released in v0.1.2 (September 2025)
+
 ### Cross-platform Support (Complete) - Completed in v0.1.0
 Full cross-platform support for macOS, Windows, and Linux
 - ✅ Platform detection and dispatch (#7)

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2025-09-02
+
+### Added
+- Startup model preloading with progress display: Eliminates 30s-2min delay on first voice recognition by loading ASR models during initialization
+- Version number display in application logo for better user experience
+- Progress feedback during model loading ("Loading ASR model... Ready!")
+
+### Fixed
+- Version consistency issues through dynamic version retrieval from pyproject.toml using importlib.metadata
+- Improved user experience with immediate readiness after startup
+
+### Technical Implementation
+- Enhanced FasterWhisperBackend to preload models during __init__ instead of lazy loading
+- Added show_progress parameter for user feedback during model initialization
+- Updated logo rendering to dynamically display version information
+- Comprehensive test coverage for preloading functionality
+
 ## [0.1.1] - 2025-08-31
 
 ### Changed
@@ -107,7 +124,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS only (Windows support planned for v0.0.3)
 - Requires Microphone and Accessibility permissions on first run
 
-[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/lostandfound/presstalk/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/lostandfound/presstalk/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lostandfound/presstalk/compare/v0.1.0-beta.1...v0.1.0
 [0.1.0-beta.1]: https://github.com/lostandfound/presstalk/compare/v0.0.1...v0.1.0-beta.1

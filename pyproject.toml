@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "presstalk"
-version = "0.1.1"
+version = "0.1.2"
 description = "Local push-to-talk CLI with always-on capture and offline ASR"
 readme = "README.md"
 requires-python = ">=3.9"
