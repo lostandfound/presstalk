@@ -22,6 +22,7 @@ class Config:
     # UI
     mode: Optional[str] = None
     hotkey: Optional[str] = None
+    audio_feedback: Optional[bool] = None
     # Paste
     paste_guard: Optional[bool] = None
     paste_blocklist: Optional[Any] = None
@@ -47,6 +48,7 @@ class Config:
         mde = "hold"
         hk = "ctrl+space"
         pguard = True
+        afeedback = True
         # OS-specific default paste guard blocklist
         if os.name == "nt" or sys.platform == "win32":  # type: ignore[name-defined]
             pblock = (
@@ -70,6 +72,7 @@ class Config:
             "model": mdl,
             "mode": mde,
             "hotkey": hk,
+            "audio_feedback": afeedback,
             "paste_guard": pguard,
             "paste_blocklist": pblock,
             "show_logo": slog,
@@ -138,6 +141,11 @@ class Config:
             vals["model"] = yaml_data.get("model", vals["model"])
             vals["mode"] = yaml_data.get("mode", vals["mode"])
             vals["hotkey"] = yaml_data.get("hotkey", vals["hotkey"])
+            if "audio_feedback" in yaml_data:
+                try:
+                    vals["audio_feedback"] = bool(yaml_data.get("audio_feedback"))
+                except Exception:
+                    pass
             if "paste_guard" in yaml_data:
                 try:
                     vals["paste_guard"] = bool(yaml_data.get("paste_guard"))
@@ -170,6 +178,8 @@ class Config:
         self.model = self.model or vals["model"]
         self.mode = self.mode or vals["mode"]
         self.hotkey = self.hotkey or vals["hotkey"]
+        if self.audio_feedback is None:
+            self.audio_feedback = bool(vals.get("audio_feedback", True))
         # Normalize and validate hotkey specification
         try:
             from .hotkey_pynput import normalize_hotkey, validate_hotkey

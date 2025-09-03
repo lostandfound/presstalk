@@ -19,6 +19,9 @@ min_capture_ms: 1800 # enforce minimum capture length to avoid short taps
 mode: hold           # hold = press to hold, toggle = tap to start/stop
 hotkey: ctrl+space  # default combo; supports combos like ctrl+shift+x
 
+# Audio feedback (system beep)
+audio_feedback: true
+
 # Paste behavior (macOS)
 paste_guard: true    # if true, skip paste when frontmost app matches blocklist
 paste_blocklist:     # names or bundle IDs (case‑insensitive substring match)
