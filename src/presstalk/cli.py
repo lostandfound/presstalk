@@ -8,6 +8,7 @@ from .ring_buffer import RingBuffer
 from .controller import Controller
 from .capture import PCMCapture
 from .orchestrator import Orchestrator
+from .beep import beep as system_beep
 from .paste import insert_text
 from .hotkey import HotkeyHandler
 from .engine.dummy_engine import DummyAsrEngine
@@ -65,7 +66,12 @@ def _build_run_orchestrator(cfg: Config) -> Orchestrator:
         )
 
     orch = Orchestrator(
-        controller=controller, ring=ring, capture=capture, paste_fn=_paste
+        controller=controller,
+        ring=ring,
+        capture=capture,
+        paste_fn=_paste,
+        audio_feedback=getattr(cfg, "audio_feedback", True),
+        beep_fn=system_beep,
     )
     return orch
 
@@ -247,6 +253,8 @@ def _run_simulate(args) -> int:
         ring=ring,
         capture=cap,
         paste_fn=lambda t: print("FINAL:", t) or True,
+        audio_feedback=getattr(cfg, "audio_feedback", True),
+        beep_fn=system_beep,
     )
     orch.press()
     while cap.is_running():

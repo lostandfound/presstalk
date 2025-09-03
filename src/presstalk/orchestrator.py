@@ -1,5 +1,5 @@
 import time
-from typing import Callable
+from typing import Callable, Optional
 
 from .controller import Controller
 from .ring_buffer import RingBuffer
@@ -16,11 +16,15 @@ class Orchestrator:
         ring: RingBuffer,
         capture: PCMCapture,
         paste_fn: Callable[[str], bool],
+        audio_feedback: bool = True,
+        beep_fn: Optional[Callable[[], None]] = None,
     ) -> None:
         self.controller = controller
         self.ring = ring
         self.capture = capture
         self.paste_fn = paste_fn
+        self._audio_feedback = bool(audio_feedback)
+        self._beep = beep_fn
         self._started_capture = False
         self._bytes_sent = 0
         self._t0 = 0.0
@@ -47,6 +51,12 @@ class Orchestrator:
             self._bytes_sent = 0
         self._t0 = time.time()
         self.controller.press()
+        # audio feedback on start
+        if self._audio_feedback and self._beep:
+            try:
+                self._beep()
+            except Exception:
+                pass
         if not self.capture.is_running():
             self.capture.start(self._on_bytes)
             self._started_capture = True
@@ -56,6 +66,12 @@ class Orchestrator:
         if self._started_capture:
             self.capture.stop()
             self._started_capture = False
+        # audio feedback on stop
+        if self._audio_feedback and self._beep:
+            try:
+                self._beep()
+            except Exception:
+                pass
         if text:
             self.paste_fn(text)
         return text
