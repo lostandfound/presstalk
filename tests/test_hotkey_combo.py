@@ -52,12 +52,12 @@ class TestHotkeyCombo(unittest.TestCase):
     def test_validate_invalid_hotkeys(self):
         from presstalk.hotkey_pynput import validate_hotkey
 
-        # invalid: only modifiers with no primary (except legacy single-modifier allowed)
+        # invalid: only modifiers with no primary
         self.assertFalse(validate_hotkey("ctrl+alt"))
         # invalid: empty
         self.assertFalse(validate_hotkey(""))
-        # valid legacy single modifier
-        self.assertTrue(validate_hotkey("ctrl"))
+        # invalid: legacy single modifier no longer accepted
+        self.assertFalse(validate_hotkey("ctrl"))
         # valid single non-modifier
         self.assertTrue(validate_hotkey("space"))
 

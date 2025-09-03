@@ -65,8 +65,7 @@ def validate_hotkey(spec: str) -> bool:
 
     Rules:
     - Allow one non-modifier key optionally combined with modifiers.
-    - Allow legacy single-modifier hotkeys (e.g., "ctrl").
-    - Disallow multiple modifiers with no primary (e.g., "ctrl+alt").
+    - Disallow modifier-only specs (e.g., "ctrl", "ctrl+alt").
     - Disallow empty specs.
     """
     norm = normalize_hotkey(spec)
@@ -87,8 +86,8 @@ def validate_hotkey(spec: str) -> bool:
             except Exception:
                 pass
         return True
-    # no primary: legacy single-modifier like "ctrl" ok; multiple modifiers invalid
-    return len(mods) == 1
+    # no primary: modifier-only is invalid
+    return False
 
 
 class GlobalHotkeyRunner:
