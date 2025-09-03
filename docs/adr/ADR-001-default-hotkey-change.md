@@ -1,7 +1,7 @@
-# ADR-001: Default Hotkey Change from Ctrl to Shift+Space
+# ADR-001: Default Hotkey Change from Ctrl to Ctrl+Shift+Space
 
 ## Status
-Accepted
+Accepted (Revised)
 
 ## Context
 
@@ -13,7 +13,7 @@ PressTalk currently uses a single `ctrl` key as the default global hotkey for Pu
 
 ## Decision
 
-We will change the default hotkey from `ctrl` to `Shift+Space` for the following reasons:
+We will change the default hotkey from `ctrl` to `Ctrl+Shift+Space` for the following reasons:
 
 ### Requirements Framework
 1. **Accessibility (Non-negotiable)**: Zero conflicts with major screen readers

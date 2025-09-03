@@ -272,7 +272,7 @@ def _run_ptt(args) -> int:
         cfg.min_capture_ms = int(args.min_capture_ms)
     effective_mode = getattr(args, "mode", None) or getattr(cfg, "mode", None) or "hold"
     effective_hotkey = (
-        getattr(args, "hotkey", None) or getattr(cfg, "hotkey", None) or "shift+space"
+        getattr(args, "hotkey", None) or getattr(cfg, "hotkey", None) or "ctrl+shift+space"
     )
     try:
         orch = _build_run_orchestrator(cfg)

@@ -98,12 +98,12 @@ class GlobalHotkeyRunner:
     """
 
     def __init__(
-        self, orchestrator, *, mode: str = "hold", key_name: str = "shift+space"
+        self, orchestrator, *, mode: str = "hold", key_name: str = "ctrl+shift+space"
     ) -> None:
         if keyboard is None:
             raise RuntimeError("pynput is not installed")
         self._handler = HotkeyHandler(orchestrator, mode=mode)
-        self._key_spec = normalize_hotkey(key_name or "shift+space")
+        self._key_spec = normalize_hotkey(key_name or "ctrl+shift+space")
         if not validate_hotkey(self._key_spec):
             raise ValueError(f"Invalid hotkey: {key_name}")
         self._listener: Optional[keyboard.Listener] = None
