@@ -14,6 +14,7 @@ from .hotkey import HotkeyHandler
 from .engine.dummy_engine import DummyAsrEngine
 from .logger import get_logger, QUIET, INFO, DEBUG
 from .logo import print_logo
+from .beep import beep as system_beep
 
 
 def _build_run_orchestrator(cfg: Config) -> Orchestrator:
@@ -207,6 +208,10 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Minimum capture ms (e.g., 1800)",
     )
+    # config subcommand
+    cfgp = sub.add_parser("config", help="Interactive configuration editor")
+    cfgp.add_argument("--config", help="Path to YAML config (presstalk.yaml)")
+    cfgp.add_argument("--show", action="store_true", help="Show current config and exit")
     return parser
 
 
@@ -352,6 +357,95 @@ def _run_ptt(args) -> int:
     return 0
 
 
+def _write_yaml(path: str, data: dict) -> None:
+    lines = []
+    for k, v in data.items():
+        if isinstance(v, bool):
+            vv = "true" if v else "false"
+        else:
+            vv = str(v)
+        lines.append(f"{k}: {vv}\n")
+    with open(path, "w", encoding="utf-8") as f:
+        f.writelines(lines)
+
+
+def _run_config(args) -> int:
+    cfg_path = _find_repo_config(getattr(args, "config", None))
+    cfg = Config(config_path=cfg_path)
+    if getattr(args, "show", False):
+        print("PressTalk Configuration (read-only)")
+        print(f"Current hotkey: {cfg.hotkey}")
+        print(f"Current language: {cfg.language}")
+        print(f"Current model: {cfg.model}")
+        print(f"Audio feedback: {getattr(cfg, 'audio_feedback', True)}")
+        return 0
+
+    print("PressTalk Configuration")
+    # Hotkey
+    cur_hotkey = cfg.hotkey
+    try:
+        from .hotkey_pynput import validate_hotkey, normalize_hotkey
+    except Exception:
+        def normalize_hotkey(x: str) -> str: return x
+        def validate_hotkey(x: str) -> bool: return bool(x)
+    for _ in range(2):
+        hk = input(
+            f"New hotkey (e.g., ctrl+space, ctrl+shift+x) [{cur_hotkey}]: "
+        ).strip()
+        if not hk:
+            hk = cur_hotkey
+        hk = normalize_hotkey(hk)
+        if validate_hotkey(hk):
+            cfg.hotkey = hk
+            break
+        print("Invalid hotkey; please try again or press Enter to keep current.")
+    # Language
+    lang = input(f"Language (en/ja/es/fr/de/...) [{cfg.language}]: ").strip()
+    if lang:
+        cfg.language = lang
+    # Model
+    cur_model = cfg.model or "small"
+    allowed_models = {"tiny", "base", "small", "medium", "large"}
+    m = input(f"Model (tiny/base/small/medium/large) [{cur_model}]: ").strip().lower()
+    if m:
+        if m in allowed_models:
+            cfg.model = m
+        else:
+            print("Invalid model; keeping current.")
+    # Audio feedback
+    cur_af = bool(getattr(cfg, "audio_feedback", True))
+    ans = input(
+        f"Enable audio feedback? [{'Y' if cur_af else 'y'}/{'n' if cur_af else 'N'}]: "
+    ).strip().lower()
+    if ans in ("y", "yes"):
+        cfg.audio_feedback = True
+    elif ans in ("n", "no"):
+        cfg.audio_feedback = False
+    else:
+        cfg.audio_feedback = cur_af
+
+    # Save
+    ans = input("Save configuration? [Y/n]: ").strip().lower()
+    if ans in ("", "y", "yes"):
+        # Determine path
+        path = cfg_path
+        if not path:
+            pkg_dir = os.path.dirname(__file__)
+            repo_root = os.path.abspath(os.path.join(pkg_dir, "..", ".."))
+            path = os.path.join(repo_root, "presstalk.yaml")
+        data = {
+            "language": cfg.language,
+            "model": cfg.model,
+            "hotkey": cfg.hotkey,
+            "audio_feedback": bool(getattr(cfg, "audio_feedback", True)),
+        }
+        _write_yaml(path, data)
+        print(f"Configuration saved to {path}")
+    else:
+        print("Aborted. No changes saved.")
+    return 0
+
+
 def main():
     parser = build_parser()
     args = parser.parse_args()
@@ -364,5 +458,7 @@ def main():
         return _run_simulate(args)
     if args.cmd == "run":
         return _run_ptt(args)
+    if args.cmd == "config":
+        return _run_config(args)
     parser.print_help()
     return 0
