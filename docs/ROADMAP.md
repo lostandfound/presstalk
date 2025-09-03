@@ -29,6 +29,19 @@ Full cross-platform support for macOS, Windows, and Linux
 
 Features that are decided and currently under development or planned.
 
+### Accessibility Improvements - Priority for Next Release
+Critical accessibility enhancements to support users with disabilities
+- 🔥 **Screen reader compatibility**: Address hotkey conflicts with NVDA/JAWS (#43)
+- 🔥 **WCAG 2.1 compliance**: Resolve Success Criterion 2.1.4 violations
+- ⏳ **Interactive configuration system**: Accessible setup and hotkey customization
+- ⏳ **Audio feedback system**: 
+  - System beep integration (cross-platform, no external files required)
+  - Recording start/stop audio cues (default: enabled, user configurable)
+  - Voice announcements for recording status and transcription results
+- ⏳ **Visual indicator improvements**: High contrast mode and system tray support
+- **Priority**: High (Phase 0 emergency response needed)
+- **Target**: Next minor release (v0.1.3)
+
 ---
 
 ## Ideas / Future Considerations
@@ -54,7 +67,11 @@ Features to consider for future development (priority and timeline TBD).
 
 ### User Experience
 - Menu bar helper (macOS) for quick status and controls
-- GUI configuration interface
+- **Enhanced configuration interfaces**:
+  - Interactive CLI configuration (`presstalk config`) - TUI with step-by-step guidance
+  - Web-based configuration server (`presstalk config --web`) - WCAG 2.1 compliant browser interface
+  - Real-time conflict detection and NVDA/JAWS compatibility warnings
+  - Accessible hotkey testing and validation
 - Profile management (work/personal settings)
 - Usage statistics and insights
 
