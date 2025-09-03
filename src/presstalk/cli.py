@@ -130,7 +130,7 @@ def build_parser() -> argparse.ArgumentParser:
     runp.add_argument("--config", help="Path to YAML config (presstalk.yaml)")
     runp.add_argument("--mode", choices=["hold", "toggle"], default=None, help="PTT mode")
     runp.add_argument("--console", action="store_true", help="Use console input instead of global hotkey")
-    runp.add_argument("--hotkey", default=None, help="Hotkey key name (ctrl/cmd/alt/space or character)")
+    runp.add_argument("--hotkey", default=None, help="Hotkey combo (e.g., shift+space, ctrl+shift+x)")
     runp.add_argument("--log-level", choices=["QUIET", "INFO", "DEBUG"], default="INFO", help="Logging level")
     runp.add_argument("--language", default=None, help="Override language (e.g., ja)")
     runp.add_argument("--model", default=None, help="Override model (e.g., small)")
@@ -189,7 +189,7 @@ def _run_ptt(args) -> int:
     if getattr(args, 'min_capture_ms', None) is not None:
         cfg.min_capture_ms = int(args.min_capture_ms)
     effective_mode = getattr(args, 'mode', None) or getattr(cfg, 'mode', None) or 'hold'
-    effective_hotkey = getattr(args, 'hotkey', None) or getattr(cfg, 'hotkey', None) or 'ctrl'
+    effective_hotkey = getattr(args, 'hotkey', None) or getattr(cfg, 'hotkey', None) or 'shift+space'
     try:
         orch = _build_run_orchestrator(cfg)
     except Exception as e:

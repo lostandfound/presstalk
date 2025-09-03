@@ -18,8 +18,8 @@ class TestModelPreloading(unittest.TestCase):
         # Create backend - this should trigger model loading
         backend = FasterWhisperBackend(model="tiny")
         
-        # Verify model was loaded during initialization
-        mock_whisper.assert_called_once_with("tiny")
+        # Verify model was loaded during initialization with default compute_type
+        mock_whisper.assert_called_once_with("tiny", compute_type='float32')
         self.assertIsNotNone(backend._model)
         self.assertEqual(backend._model, mock_model_instance)
     

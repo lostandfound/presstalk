@@ -45,7 +45,7 @@ class Config:
         mincap = 1800
         mdl = "small"
         mde = "hold"
-        hk = "ctrl"
+        hk = "shift+space"
         pguard = True
         # OS-specific default paste guard blocklist
         if os.name == 'nt' or sys.platform == 'win32':  # type: ignore[name-defined]
@@ -159,6 +159,19 @@ class Config:
         self.model = self.model or vals['model']
         self.mode = self.mode or vals['mode']
         self.hotkey = self.hotkey or vals['hotkey']
+        # Normalize and validate hotkey specification
+        try:
+            from .hotkey_pynput import normalize_hotkey, validate_hotkey
+            if self.hotkey:
+                norm = normalize_hotkey(self.hotkey)
+                if validate_hotkey(norm):
+                    self.hotkey = norm
+                else:
+                    # fallback to safe default
+                    self.hotkey = vals['hotkey']
+        except Exception:
+            # best-effort: leave as-is if validation unavailable
+            pass
         if self.paste_guard is None:
             self.paste_guard = vals['paste_guard']
         if self.paste_blocklist is None:

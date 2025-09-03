@@ -17,7 +17,7 @@ min_capture_ms: 1800 # enforce minimum capture length to avoid short taps
 
 # PTT interaction
 mode: hold           # hold = press to hold, toggle = tap to start/stop
-hotkey: ctrl         # ctrl/cmd/alt/space or character key (global hotkey)
+hotkey: shift+space  # screen reader-safe default; supports combos like ctrl+shift+x
 
 # Paste behavior (macOS)
 paste_guard: true    # if true, skip paste when frontmost app matches blocklist
