@@ -15,60 +15,73 @@ PressTalk currently uses a single `ctrl` key as the default global hotkey for Pu
 
 We will change the default hotkey from `ctrl` to `Ctrl+Shift+Space` for the following reasons:
 
-### Requirements Framework
+### Requirements Framework (Revised)
 1. **Accessibility (Non-negotiable)**: Zero conflicts with major screen readers
-2. **2-key limitation**: User requirement for maximum simplicity
+2. **Usability (Critical)**: Must not interfere with normal text input or system functions
 3. **Cross-platform compatibility**: Must work on Windows/macOS/Linux
 4. **Ergonomics**: Single-handed operation for Push-to-Talk usage
 
-### Analysis Results
+### Analysis Results (Revised)
 
-| Candidate | OS Conflicts | App Conflicts | Ergonomics | Risk Score |
-|-----------|--------------|---------------|------------|------------|
-| **Shift+Space** | None | Minor (acceptable) | Excellent | 6 (best) |
-| Ctrl+Space | High (macOS input switching) | High (IDE autocomplete) | Good | 13 |
-| Alt+Space | High (Windows menu) | Medium | Good | 11 |
+| Candidate | OS Conflicts | App Conflicts | Text Input Issues | Usability | Final Score |
+|-----------|--------------|---------------|-------------------|-----------|-------------|
+| **Ctrl+Shift+Space** | None | None | None | Good | Best |
+| Shift+Space | None | Minor | **Fatal** (continuous spaces) | **Unusable** | Rejected |
+| Ctrl+Space | High (macOS) | High (IDE) | None | Poor | Rejected |
+| Alt+Space | High (Windows) | Medium | None | Poor | Rejected |
 
-### Key Advantages of Shift+Space
+### Key Advantages of Ctrl+Shift+Space
 
-- **Zero OS-level conflicts**: No competition with core operating system functions
-- **Minimal application conflicts**: Limited to non-critical functions (e.g., Firefox scroll)
-- **Optimal ergonomics**: Natural left-hand operation (pinky + thumb)
-- **WCAG 2.1 compliant**: Modifier key + space key combination prevents accidental activation
+- **Zero OS-level conflicts**: No competition with core operating system functions  
+- **Zero application conflicts**: Three-key combination avoids common shortcuts
+- **No text input interference**: Does not produce unwanted characters during hold operation
+- **WCAG 2.1 compliant**: Multi-modifier key combination prevents accidental activation
 - **Screen reader safe**: No conflicts with NVDA, JAWS, VoiceOver, Orca, or Windows Narrator
+- **Reliable operation**: Consistent behavior across all platforms and applications
+
+### Critical Issue Discovery
+
+During practical testing, the initially selected `Shift+Space` was found to be **completely unusable** due to:
+- **Continuous space insertion**: OS processes Shift+Space as repeated space characters during hold operations
+- **Text corruption**: Normal typing becomes impossible while hotkey is active
+- **Implementation oversight**: This practical issue was not identified in theoretical analysis
 
 ## Consequences
 
 ### Positive
 - Eliminates accessibility barriers for screen reader users
 - Achieves WCAG 2.1 Success Criterion 2.1.4 compliance
-- Provides superior ergonomics for Push-to-Talk operation
+- **Resolves text input interference**: No unwanted character insertion during operation
+- Zero conflicts with OS functions and major applications
 - Maintains cross-platform consistency
-- Resolves the most critical user-blocking issue
+- **Practical usability**: Actually works in real-world usage scenarios
 
 ### Negative
 - **Breaking change**: Existing users must adapt to new default
-- Minor application conflicts in specific contexts (Firefox page scroll)
+- **Three-key combination**: More complex than initially desired (compromised from 2-key requirement)
 - Requires user migration and communication effort
+- Slightly more difficult to press than 2-key combinations
 
 ### Implementation Requirements
 - Update default configuration in `presstalk.yaml`
-- Modify hotkey detection logic to support key combinations
+- Modify hotkey detection logic to support 3-key combinations
+- Update ADR documentation to reflect practical testing insights
 - Implement migration path for existing users with clear communication
 - Update all documentation and help materials
 
 ### Migration Strategy
-- New users: Start with `Shift+Space` immediately  
+- New users: Start with `Ctrl+Shift+Space` immediately  
 - Existing users: Auto-migrate with one-time notification explaining the change
 - Preserve customization options for users who prefer different combinations
-- Provide clear explanation of accessibility improvements
+- Provide clear explanation of accessibility improvements and practical fixes
 
 ## Alternatives Considered
 
-1. **Ctrl+Space**: Rejected due to high conflicts (macOS input switching, IDE autocomplete)
-2. **Alt+Space**: Rejected due to Windows system menu conflict
-3. **3-key combinations**: Rejected per user requirement for simplicity
-4. **Function keys**: Rejected due to inconsistent availability across keyboards
+1. **Shift+Space**: **Rejected due to fatal text input interference** (continuous space insertion)
+2. **Ctrl+Space**: Rejected due to high conflicts (macOS input switching, IDE autocomplete)
+3. **Alt+Space**: Rejected due to Windows system menu conflict  
+4. **Function keys**: Rejected due to inconsistent availability and poor ergonomics
+5. **2-key combinations**: **Abandoned due to lack of viable options** that avoid both conflicts and text input issues
 
 ## References
 - Screen reader hotkey analysis documentation
@@ -78,4 +91,5 @@ We will change the default hotkey from `ctrl` to `Ctrl+Shift+Space` for the foll
 - Detailed analysis: `docs/knowledge/report-hotkey.md`
 
 ## Date
-2025-09-03
+2025-09-03 (Initial Decision)  
+2025-09-03 (Revised after practical testing)
