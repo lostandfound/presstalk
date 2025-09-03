@@ -62,16 +62,18 @@ class Orchestrator:
             self._started_capture = True
 
     def release(self) -> str:
-        text = self.controller.release()
-        if self._started_capture:
-            self.capture.stop()
-            self._started_capture = False
-        # audio feedback on stop
+        # audio feedback on stop (immediate)
         if self._audio_feedback and self._beep:
             try:
                 self._beep()
             except Exception:
                 pass
+        # stop capture promptly
+        if self._started_capture:
+            self.capture.stop()
+            self._started_capture = False
+        # finalize transcription (may take time)
+        text = self.controller.release()
         if text:
             self.paste_fn(text)
         return text
