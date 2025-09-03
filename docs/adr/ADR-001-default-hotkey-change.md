@@ -1,4 +1,4 @@
-# ADR-001: Default Hotkey Change from Ctrl to Ctrl+Shift+Space
+# ADR-001: Default Hotkey Change from Ctrl to Ctrl+Space
 
 ## Status
 Accepted (Revised)
@@ -32,12 +32,12 @@ We will change the default hotkey from `ctrl` to `Ctrl+Space` for the following 
 
 ### Key Advantages of Ctrl+Space
 
-- **Industry standard adoption**: Used by established voice input applications like Aqua Voice
+- **Practical convention**: Simple, memorable two-key chord commonly used across apps
 - **Optimal ergonomics**: Two-key combination with excellent single-handed operation
 - **No text input interference**: Does not produce unwanted characters during hold operation
 - **WCAG 2.1 compliant**: Multi-key combination prevents accidental activation
-- **Screen reader safe**: No conflicts with NVDA, JAWS, VoiceOver, Orca, or Windows Narrator
-- **Practical usability**: Real-world testing shows acceptable conflict levels in Push-to-Talk context
+- **Screen reader safe**: No known critical conflicts with NVDA, JAWS, VoiceOver, Orca, or Windows Narrator
+- **Practical usability**: 実環境での使用において許容範囲の競合に留まる（PTT用途では問題最小）
 
 ### Critical Issue Discovery
 
@@ -52,15 +52,14 @@ During practical testing, the initially selected `Shift+Space` was found to be *
 - Eliminates accessibility barriers for screen reader users
 - Achieves WCAG 2.1 Success Criterion 2.1.4 compliance
 - **Resolves text input interference**: No unwanted character insertion during operation
-- Zero conflicts with OS functions and major applications
 - Maintains cross-platform consistency
-- **Practical usability**: Actually works in real-world usage scenarios
+- **Practical usability**: Works in real-world usage scenarios
+- **Conflicts manageable**: Known OS/IDE conflicts have clear user-side mitigations
 
 ### Negative
 - **Breaking change**: Existing users must adapt to new default
-- **Limited platform conflicts**: Some macOS/IDE conflicts require user awareness
+- **Limited platform conflicts**: macOS 入力ソース切替、IDE 補完と競合する可能性（回避策あり）
 - Requires user migration and communication effort
-- **Industry competition**: Same default as Aqua Voice may cause user confusion
 
 ### Implementation Requirements
 - Update default configuration in `presstalk.yaml`
@@ -78,7 +77,7 @@ During practical testing, the initially selected `Shift+Space` was found to be *
 ## Alternatives Considered
 
 1. **Shift+Space**: **Rejected due to fatal text input interference** (continuous space insertion)
-2. **Ctrl+Shift+Space**: Good alternative with minimal conflicts but more complex than necessary
+2. **Ctrl+Shift+Space**: 誤起動耐性は高いが、ターミナル系で `^@` が連続入力される副作用があり不採用（デフォルトには不向き）
 3. **Alt+Space**: Rejected due to Windows system menu conflict  
 4. **Function keys**: Rejected due to inconsistent availability and poor ergonomics
 5. **3-key combinations**: Considered but determined to be over-engineered for the use case
