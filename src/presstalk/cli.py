@@ -380,54 +380,54 @@ def _run_config(args) -> int:
         print(f"Audio feedback: {getattr(cfg, 'audio_feedback', True)}")
         return 0
 
-    print("PressTalk Configuration")
-    # Hotkey
-    cur_hotkey = cfg.hotkey
+    # editors
     try:
         from .hotkey_pynput import validate_hotkey, normalize_hotkey
     except Exception:
         def normalize_hotkey(x: str) -> str: return x
         def validate_hotkey(x: str) -> bool: return bool(x)
-    for _ in range(2):
-        hk = input(
-            f"New hotkey (e.g., ctrl+space, ctrl+shift+x) [{cur_hotkey}]: "
-        ).strip()
-        if not hk:
-            hk = cur_hotkey
-        hk = normalize_hotkey(hk)
-        if validate_hotkey(hk):
-            cfg.hotkey = hk
-            break
-        print("Invalid hotkey; please try again or press Enter to keep current.")
-    # Language
-    lang = input(f"Language (en/ja/es/fr/de/...) [{cfg.language}]: ").strip()
-    if lang:
-        cfg.language = lang
-    # Model
-    cur_model = cfg.model or "small"
-    allowed_models = {"tiny", "base", "small", "medium", "large"}
-    m = input(f"Model (tiny/base/small/medium/large) [{cur_model}]: ").strip().lower()
-    if m:
-        if m in allowed_models:
-            cfg.model = m
-        else:
-            print("Invalid model; keeping current.")
-    # Audio feedback
-    cur_af = bool(getattr(cfg, "audio_feedback", True))
-    ans = input(
-        f"Enable audio feedback? [{'Y' if cur_af else 'y'}/{'n' if cur_af else 'N'}]: "
-    ).strip().lower()
-    if ans in ("y", "yes"):
-        cfg.audio_feedback = True
-    elif ans in ("n", "no"):
-        cfg.audio_feedback = False
-    else:
-        cfg.audio_feedback = cur_af
 
-    # Save
-    ans = input("Save configuration? [Y/n]: ").strip().lower()
-    if ans in ("", "y", "yes"):
-        # Determine path
+    def edit_hotkey() -> None:
+        cur = cfg.hotkey
+        for _ in range(2):
+            hk = input(
+                f"New hotkey (e.g., ctrl+space, ctrl+shift+x) [{cur}]: "
+            ).strip()
+            if not hk:
+                return
+            hk = normalize_hotkey(hk)
+            if validate_hotkey(hk):
+                cfg.hotkey = hk
+                return
+            print("Invalid hotkey; please try again or press Enter to keep current.")
+
+    def edit_language() -> None:
+        cur = cfg.language
+        lang = input(f"Language (en/ja/es/fr/de/...) [{cur}]: ").strip()
+        if lang:
+            cfg.language = lang
+
+    def edit_model() -> None:
+        cur_model = cfg.model or "small"
+        allowed = {"tiny", "base", "small", "medium", "large"}
+        m = input(f"Model (tiny/base/small/medium/large) [{cur_model}]: ").strip().lower()
+        if m:
+            if m in allowed:
+                cfg.model = m
+            else:
+                print("Invalid model; keeping current.")
+
+    def edit_audio() -> None:
+        cur = bool(getattr(cfg, "audio_feedback", True))
+        ans = input(
+            f"Enable audio feedback? [{'Y' if cur else 'y'}/{'n' if cur else 'N'}]: "
+        ).strip().lower()
+        if ans in ("y", "yes"):
+            cfg.audio_feedback = True
+        elif ans in ("n", "no"):
+            cfg.audio_feedback = False
+
+    def save_and_exit() -> int:
         path = cfg_path
         if not path:
             pkg_dir = os.path.dirname(__file__)
@@ -441,9 +441,135 @@ def _run_config(args) -> int:
         }
         _write_yaml(path, data)
         print(f"Configuration saved to {path}")
+        return 0
+
+    # simple (numbered) menu for accessibility and testability
+    simple = os.getenv("PT_SIMPLE_UI") == "1" or not sys.stdin.isatty()
+    if simple:
+        while True:
+            print("PressTalk Configuration")
+            print(f"  1) Hotkey: {cfg.hotkey}")
+            print(f"  2) Language: {cfg.language}")
+            print(f"  3) Model: {cfg.model}")
+            print(f"  4) Audio feedback: {getattr(cfg, 'audio_feedback', True)}")
+            print("  5) Save changes")
+            print("  6) Quit (discard)")
+            sel = input("Select [1-6]: ").strip()
+            if sel == "1":
+                edit_hotkey()
+            elif sel == "2":
+                edit_language()
+            elif sel == "3":
+                edit_model()
+            elif sel == "4":
+                edit_audio()
+            elif sel == "5":
+                return save_and_exit()
+            elif sel == "6":
+                print("Aborted. No changes saved.")
+                return 0
+            else:
+                continue
     else:
-        print("Aborted. No changes saved.")
-    return 0
+        # Arrow-key interactive menu (TTY)
+        items = [
+            ("Hotkey", edit_hotkey),
+            ("Language", edit_language),
+            ("Model", edit_model),
+            ("Audio feedback", edit_audio),
+            ("Save changes", None),
+            ("Quit (discard)", None),
+        ]
+
+        def _render(idx: int) -> None:
+            # Clear screen minimal: print separators for simplicity (no ANSI)
+            print("PressTalk Configuration")
+            for i, (label, _) in enumerate(items, start=1):
+                pointer = ">" if (i - 1) == idx else " "
+                value = {
+                    0: cfg.hotkey,
+                    1: cfg.language,
+                    2: cfg.model,
+                    3: str(getattr(cfg, 'audio_feedback', True)),
+                }.get(i - 1, "")
+                if value:
+                    print(f" {pointer} {i}) {label}: {value}")
+                else:
+                    print(f" {pointer} {i}) {label}")
+            print("Use ↑/↓ or j/k to navigate, Enter to select, digits 1-6 for shortcut, q to quit.")
+
+        def _get_key():
+            import sys
+            try:
+                import msvcrt  # type: ignore
+                if msvcrt.kbhit():
+                    ch = msvcrt.getch()
+                else:
+                    ch = msvcrt.getch()
+                return ch
+            except Exception:
+                import tty, termios
+                fd = sys.stdin.fileno()
+                old = termios.tcgetattr(fd)
+                try:
+                    tty.setraw(fd)
+                    ch1 = sys.stdin.read(1)
+                    if ch1 == "\x1b":  # ESC sequence
+                        ch2 = sys.stdin.read(1)
+                        if ch2 == "[":
+                            ch3 = sys.stdin.read(1)
+                            return (ch1 + ch2 + ch3).encode()
+                        return (ch1 + ch2).encode()
+                    return ch1.encode()
+                finally:
+                    termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+        idx = 0
+        while True:
+            _render(idx)
+            k = _get_key()
+            # Windows arrows: b'\xe0H'(up), b'\xe0P'(down); Enter b'\r'
+            # POSIX arrows: b'\x1b[A'(up), b'\x1b[B'(down); Enter b'\n'
+            try:
+                if k in (b"\x1b", b"q"):  # ESC or 'q'
+                    print("Aborted. No changes saved.")
+                    return 0
+                if k in (b"j",):
+                    idx = (idx + 1) % len(items)
+                    continue
+                if k in (b"k",):
+                    idx = (idx - 1) % len(items)
+                    continue
+                if k in (b"\xe0H", b"\x1b[A"):
+                    idx = (idx - 1) % len(items)
+                    continue
+                if k in (b"\xe0P", b"\x1b[B"):
+                    idx = (idx + 1) % len(items)
+                    continue
+                if k in (b"\r", b"\n"):
+                    sel = idx + 1
+                elif k and k[:1].isdigit():
+                    sel = int(k[:1].decode())
+                else:
+                    # ignore other keys
+                    continue
+            except Exception:
+                continue
+
+            if sel == 1:
+                edit_hotkey()
+            elif sel == 2:
+                edit_language()
+            elif sel == 3:
+                edit_model()
+            elif sel == 4:
+                edit_audio()
+            elif sel == 5:
+                return save_and_exit()
+            elif sel == 6:
+                print("Aborted. No changes saved.")
+                return 0
+            idx = min(idx, len(items) - 1)
 
 
 def main():

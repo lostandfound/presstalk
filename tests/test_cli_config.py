@@ -54,13 +54,14 @@ class TestCliConfig(unittest.TestCase):
             """
         )
         try:
-            # Provide new values and accept save
+            # Force simple menu; select items by number and provide new values
+            os.environ['PT_SIMPLE_UI'] = '1'
             inputs = [
-                "ctrl+shift+x",  # new hotkey
-                "en",            # language
-                "base",          # model
-                "n",             # audio feedback disabled
-                "y",             # save
+                "1", "ctrl+shift+x",  # edit hotkey
+                "2", "en",            # edit language
+                "3", "base",          # edit model
+                "4", "n",             # edit audio feedback (disable)
+                "5"                    # save changes
             ]
             args = SimpleNamespace(cmd="config", config=path, show=False)
             with mock.patch("builtins.input", side_effect=inputs):
@@ -73,19 +74,17 @@ class TestCliConfig(unittest.TestCase):
             self.assertEqual(cfg.model, "base")
             self.assertEqual(cfg.audio_feedback, False)
         finally:
+            os.environ.pop('PT_SIMPLE_UI', None)
             os.remove(path)
 
     def test_invalid_hotkey_is_handled(self):
         path = self._tmp_yaml("language: ja\nmodel: small\nhotkey: ctrl+space\n")
         try:
+            os.environ['PT_SIMPLE_UI'] = '1'
             # invalid hotkey then empty to keep current, then save
             inputs = [
-                "ctrl+alt",  # invalid (no primary)
-                "",          # keep current
-                "",          # language keep
-                "",          # model keep
-                "",          # audio feedback keep default prompt
-                "y",         # save
+                "1", "ctrl+alt", "",  # hotkey editor: invalid then keep current
+                "5"                      # save
             ]
             args = SimpleNamespace(cmd="config", config=path, show=False)
             with mock.patch("builtins.input", side_effect=inputs):
@@ -94,9 +93,9 @@ class TestCliConfig(unittest.TestCase):
             cfg = Config(config_path=path)
             self.assertEqual(cfg.hotkey, "ctrl+space")  # unchanged
         finally:
+            os.environ.pop('PT_SIMPLE_UI', None)
             os.remove(path)
 
 
 if __name__ == "__main__":
     unittest.main()
-
