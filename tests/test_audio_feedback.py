@@ -116,6 +116,7 @@ class TestAudioFeedback(unittest.TestCase):
 
             def release(self) -> str:
                 import time
+
                 time.sleep(0.02)
                 calls.append("release_done")
                 return "ok"

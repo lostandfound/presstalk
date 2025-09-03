@@ -49,15 +49,18 @@ class TestHotkeyCombo(unittest.TestCase):
         self.assertEqual(normalize_hotkey("Cmd+Option+V"), "cmd+alt+v")
         self.assertEqual(normalize_hotkey("SHIFT+SPACE"), "shift+space")
 
-    def test_validate_invalid_hotkeys(self):
+    def test_validate_hotkeys_rules(self):
         from presstalk.hotkey_pynput import validate_hotkey
 
-        # invalid: only modifiers with no primary
+        # invalid: only modifiers with 2+ modifiers and no primary
         self.assertFalse(validate_hotkey("ctrl+alt"))
         # invalid: empty
         self.assertFalse(validate_hotkey(""))
-        # invalid: legacy single modifier no longer accepted
-        self.assertFalse(validate_hotkey("ctrl"))
+        # valid: single modifier allowed
+        self.assertTrue(validate_hotkey("ctrl"))
+        self.assertTrue(validate_hotkey("shift"))
+        self.assertTrue(validate_hotkey("alt"))
+        self.assertTrue(validate_hotkey("cmd"))
         # valid single non-modifier
         self.assertTrue(validate_hotkey("space"))
 

@@ -26,4 +26,3 @@ def beep() -> None:
     except Exception:
         # swallow all
         pass
-

@@ -65,7 +65,8 @@ def validate_hotkey(spec: str) -> bool:
 
     Rules:
     - Allow one non-modifier key optionally combined with modifiers.
-    - Disallow modifier-only specs (e.g., "ctrl", "ctrl+alt").
+    - Allow a single modifier key by itself (e.g., "ctrl", "shift", "alt", "cmd").
+    - Disallow modifier-only specs with 2+ modifiers except the specific allowed set ("ctrl+shift").
     - Disallow empty specs.
     """
     norm = normalize_hotkey(spec)
@@ -86,7 +87,16 @@ def validate_hotkey(spec: str) -> bool:
             except Exception:
                 pass
         return True
-    # no primary: modifier-only is invalid
+    # no primary
+    if len(nonmods) == 0:
+        # single modifier only: allowed
+        if len(mods) == 1:
+            return True
+        # specific multi-modifier combos (e.g., ctrl+shift)
+        if len(mods) >= 2:
+            if set(mods) == {"ctrl", "shift"}:
+                return True
+            return False
     return False
 
 
