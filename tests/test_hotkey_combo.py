@@ -37,9 +37,9 @@ class FakeKeyboard:
 
 
 class TestHotkeyCombo(unittest.TestCase):
-    def test_default_hotkey_ctrl_shift_space(self):
+    def test_default_hotkey_ctrl_space(self):
         cfg = Config()
-        self.assertEqual(cfg.hotkey, "ctrl+shift+space")
+        self.assertEqual(cfg.hotkey, "ctrl+space")
 
     def test_parse_and_normalize_aliases(self):
         # parse function to be added in hotkey backend module

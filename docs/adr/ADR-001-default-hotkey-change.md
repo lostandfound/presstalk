@@ -13,7 +13,7 @@ PressTalk currently uses a single `ctrl` key as the default global hotkey for Pu
 
 ## Decision
 
-We will change the default hotkey from `ctrl` to `Ctrl+Shift+Space` for the following reasons:
+We will change the default hotkey from `ctrl` to `Ctrl+Space` for the following reasons:
 
 ### Requirements Framework (Revised)
 1. **Accessibility (Non-negotiable)**: Zero conflicts with major screen readers
@@ -25,19 +25,19 @@ We will change the default hotkey from `ctrl` to `Ctrl+Shift+Space` for the foll
 
 | Candidate | OS Conflicts | App Conflicts | Text Input Issues | Usability | Final Score |
 |-----------|--------------|---------------|-------------------|-----------|-------------|
-| **Ctrl+Shift+Space** | None | None | None | Good | Best |
+| **Ctrl+Space** | Limited (macOS) | Limited (IDE) | None | Excellent | Best |
 | Shift+Space | None | Minor | **Fatal** (continuous spaces) | **Unusable** | Rejected |
-| Ctrl+Space | High (macOS) | High (IDE) | None | Poor | Rejected |
+| Ctrl+Shift+Space | None | None | None | Good | Alternative |
 | Alt+Space | High (Windows) | Medium | None | Poor | Rejected |
 
-### Key Advantages of Ctrl+Shift+Space
+### Key Advantages of Ctrl+Space
 
-- **Zero OS-level conflicts**: No competition with core operating system functions  
-- **Zero application conflicts**: Three-key combination avoids common shortcuts
+- **Industry standard adoption**: Used by established voice input applications like Aqua Voice
+- **Optimal ergonomics**: Two-key combination with excellent single-handed operation
 - **No text input interference**: Does not produce unwanted characters during hold operation
-- **WCAG 2.1 compliant**: Multi-modifier key combination prevents accidental activation
+- **WCAG 2.1 compliant**: Multi-key combination prevents accidental activation
 - **Screen reader safe**: No conflicts with NVDA, JAWS, VoiceOver, Orca, or Windows Narrator
-- **Reliable operation**: Consistent behavior across all platforms and applications
+- **Practical usability**: Real-world testing shows acceptable conflict levels in Push-to-Talk context
 
 ### Critical Issue Discovery
 
@@ -58,30 +58,30 @@ During practical testing, the initially selected `Shift+Space` was found to be *
 
 ### Negative
 - **Breaking change**: Existing users must adapt to new default
-- **Three-key combination**: More complex than initially desired (compromised from 2-key requirement)
+- **Limited platform conflicts**: Some macOS/IDE conflicts require user awareness
 - Requires user migration and communication effort
-- Slightly more difficult to press than 2-key combinations
+- **Industry competition**: Same default as Aqua Voice may cause user confusion
 
 ### Implementation Requirements
 - Update default configuration in `presstalk.yaml`
-- Modify hotkey detection logic to support 3-key combinations
-- Update ADR documentation to reflect practical testing insights
+- Modify hotkey detection logic to support 2-key combinations
+- Update ADR documentation to reflect industry analysis and practical considerations
 - Implement migration path for existing users with clear communication
 - Update all documentation and help materials
 
 ### Migration Strategy
-- New users: Start with `Ctrl+Shift+Space` immediately  
+- New users: Start with `Ctrl+Space` immediately  
 - Existing users: Auto-migrate with one-time notification explaining the change
 - Preserve customization options for users who prefer different combinations
-- Provide clear explanation of accessibility improvements and practical fixes
+- Provide clear explanation of accessibility improvements and industry alignment
 
 ## Alternatives Considered
 
 1. **Shift+Space**: **Rejected due to fatal text input interference** (continuous space insertion)
-2. **Ctrl+Space**: Rejected due to high conflicts (macOS input switching, IDE autocomplete)
+2. **Ctrl+Shift+Space**: Good alternative with minimal conflicts but more complex than necessary
 3. **Alt+Space**: Rejected due to Windows system menu conflict  
 4. **Function keys**: Rejected due to inconsistent availability and poor ergonomics
-5. **2-key combinations**: **Abandoned due to lack of viable options** that avoid both conflicts and text input issues
+5. **3-key combinations**: Considered but determined to be over-engineered for the use case
 
 ## References
 - Screen reader hotkey analysis documentation

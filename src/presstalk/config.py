@@ -45,7 +45,7 @@ class Config:
         mincap = 1800
         mdl = "small"
         mde = "hold"
-        hk = "ctrl+shift+space"
+        hk = "ctrl+space"
         pguard = True
         # OS-specific default paste guard blocklist
         if os.name == "nt" or sys.platform == "win32":  # type: ignore[name-defined]
