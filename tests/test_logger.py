@@ -30,6 +30,5 @@ class TestLogger(unittest.TestCase):
         self.assertEqual(out, [])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

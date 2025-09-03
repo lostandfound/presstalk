@@ -41,5 +41,5 @@ class TestRingBuffer(unittest.TestCase):
         self.assertEqual(rb.size(), 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

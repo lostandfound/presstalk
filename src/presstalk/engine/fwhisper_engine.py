@@ -40,7 +40,13 @@ class FasterWhisperEngine:
             return ""
         try:
             with ThreadPoolExecutor(max_workers=1) as ex:
-                fut = ex.submit(self.backend.transcribe, bytes(buf), sample_rate=self.sample_rate, language=self.language, model=self.model)
+                fut = ex.submit(
+                    self.backend.transcribe,
+                    bytes(buf),
+                    sample_rate=self.sample_rate,
+                    language=self.language,
+                    model=self.model,
+                )
                 try:
                     return fut.result(timeout=timeout_s)
                 except FutureTimeout:
@@ -49,6 +55,6 @@ class FasterWhisperEngine:
                     return ""
         except Exception:
             return ""
-        
+
     def close_session(self, session_id: str) -> None:
         self._bufs.pop(session_id, None)

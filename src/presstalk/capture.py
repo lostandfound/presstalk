@@ -5,7 +5,9 @@ from typing import Callable, Optional
 
 class PCMSourceProtocol:
     def start(self) -> None: ...
-    def read(self, nbytes: int) -> Optional[bytes]: ...  # None => finished, b"" => no data yet
+    def read(
+        self, nbytes: int
+    ) -> Optional[bytes]: ...  # None => finished, b"" => no data yet
     def stop(self) -> None: ...
 
 
@@ -17,7 +19,14 @@ class PCMCapture:
     - source implements start/read/stop, making this unit-testable without devices
     """
 
-    def __init__(self, *, sample_rate: int, channels: int, chunk_ms: int, source: PCMSourceProtocol) -> None:
+    def __init__(
+        self,
+        *,
+        sample_rate: int,
+        channels: int,
+        chunk_ms: int,
+        source: PCMSourceProtocol,
+    ) -> None:
         self.sample_rate = int(sample_rate)
         self.channels = int(channels)
         self.chunk_ms = int(chunk_ms)
@@ -76,4 +85,3 @@ class PCMCapture:
         if t is not None:
             t.join(timeout=1.0)
         self._thread = None
-

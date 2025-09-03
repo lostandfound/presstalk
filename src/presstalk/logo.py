@@ -12,6 +12,7 @@ def render_logo(color: bool = True, style: str = "simple") -> str:
     # Import version here to avoid circular imports
     try:
         from . import __version__
+
         version_suffix = f" v{__version__}"
     except ImportError:
         version_suffix = ""

@@ -9,7 +9,7 @@ from presstalk.engine.dummy_engine import DummyAsrEngine
 class TestDummyEngine(unittest.TestCase):
     def test_flow(self):
         eng = DummyAsrEngine()
-        sid = eng.start_session(language='ja')
+        sid = eng.start_session(language="ja")
         self.assertTrue(sid)
         eng.push_audio(sid, b"abc")
         eng.push_audio(sid, b"def")
@@ -20,12 +20,11 @@ class TestDummyEngine(unittest.TestCase):
     def test_missing_session_is_safe(self):
         eng = DummyAsrEngine()
         # unknown session operations shouldn't raise
-        eng.push_audio('x', b'hi')
-        txt = eng.finalize('x')
+        eng.push_audio("x", b"hi")
+        txt = eng.finalize("x")
         self.assertEqual(txt, "bytes=0")
-        eng.close_session('x')
+        eng.close_session("x")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

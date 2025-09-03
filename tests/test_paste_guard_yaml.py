@@ -4,6 +4,7 @@ import textwrap
 import unittest
 
 import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from presstalk.config import Config
@@ -27,9 +28,14 @@ class TestPasteGuardYaml(unittest.TestCase):
         )
         try:
             cfg = Config(config_path=path)
+
             # simulate Terminal as frontmost app; run_cmd returns success (would paste if allowed)
-            front = lambda: {"name": "Terminal", "bundle_id": "com.apple.Terminal"}
-            run_cmd = lambda cmd: 0
+            def front():
+                return {"name": "Terminal", "bundle_id": "com.apple.Terminal"}
+
+            def run_cmd(cmd):
+                return 0
+
             ok = insert_text(
                 "hello",
                 frontmost_getter=front,
@@ -51,9 +57,14 @@ class TestPasteGuardYaml(unittest.TestCase):
         )
         try:
             cfg = Config(config_path=path)
+
             # even if Terminal is frontmost, guard disabled => paste proceeds
-            front = lambda: {"name": "Terminal"}
-            run_cmd = lambda cmd: 0
+            def front():
+                return {"name": "Terminal"}
+
+            def run_cmd(cmd):
+                return 0
+
             ok = insert_text(
                 "hello",
                 frontmost_getter=front,
@@ -67,5 +78,5 @@ class TestPasteGuardYaml(unittest.TestCase):
             os.remove(path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

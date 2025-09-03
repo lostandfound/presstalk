@@ -1,7 +1,5 @@
 import io
-import os
 import shutil
-import sys
 from pathlib import Path
 from unittest import TestCase, mock
 
@@ -29,13 +27,26 @@ class TestTaskRunner(TestCase):
             m_sub.call.assert_not_called()
 
         with mock.patch.object(task, "subprocess") as m_sub:
-            rc = task.main(["--dry-run", "-v", "test", "--file", "tests/test_controller.py"])
+            rc = task.main(
+                ["--dry-run", "-v", "test", "--file", "tests/test_controller.py"]
+            )
             self.assertEqual(rc, 0)
             m_sub.call.assert_not_called()
 
     def test_simulate_and_run_dry_run(self):
         with mock.patch.object(task, "subprocess") as m_sub:
-            rc = task.main(["--dry-run", "-v", "simulate", "--chunks", "hello", "world", "--delay-ms", "40"])
+            rc = task.main(
+                [
+                    "--dry-run",
+                    "-v",
+                    "simulate",
+                    "--chunks",
+                    "hello",
+                    "world",
+                    "--delay-ms",
+                    "40",
+                ]
+            )
             self.assertEqual(rc, 0)
             m_sub.call.assert_not_called()
 
@@ -45,7 +56,9 @@ class TestTaskRunner(TestCase):
                 m_sub.call.return_value = 0
                 rc = task.main(["install-global"])
                 self.assertEqual(rc, 0)
-                m_sub.call.assert_called_with(["uv", "tool", "install", "--editable", "."])
+                m_sub.call.assert_called_with(
+                    ["uv", "tool", "install", "--editable", "."]
+                )
 
     def test_bootstrap_prefers_uv(self):
         with mock.patch.object(task, "which", side_effect=["/usr/bin/uv"]):
@@ -53,7 +66,9 @@ class TestTaskRunner(TestCase):
                 m_sub.call.return_value = 0
                 rc = task.main(["bootstrap"])
                 self.assertEqual(rc, 0)
-                m_sub.call.assert_called_with(["uv", "tool", "install", "--editable", "."])
+                m_sub.call.assert_called_with(
+                    ["uv", "tool", "install", "--editable", "."]
+                )
 
     def test_bootstrap_uses_pipx_when_no_uv(self):
         with mock.patch.object(task, "which", side_effect=[None, "/usr/bin/pipx"]):
@@ -65,9 +80,11 @@ class TestTaskRunner(TestCase):
 
     def test_bootstrap_fallback_venv(self):
         with mock.patch.object(task, "which", side_effect=[None, None]):
-            with mock.patch.object(task, "subprocess") as m_sub, \
-                 mock.patch.object(task, "Path") as m_path, \
-                 mock.patch.object(task, "sys") as m_sys:
+            with (
+                mock.patch.object(task, "subprocess") as m_sub,
+                mock.patch.object(task, "Path") as m_path,
+                mock.patch.object(task, "sys") as m_sys,
+            ):
                 m_sub.call.return_value = 0
                 # Simulate POSIX
                 m_sys.platform = "darwin"
@@ -79,7 +96,7 @@ class TestTaskRunner(TestCase):
                 self.assertEqual(rc, 0)
                 # First command should be python3 -m venv <dir>
                 first_call = m_sub.call.call_args_list[0][0][0]
-                self.assertEqual(first_call[:3], ["python3", "-m", "venv"]) 
+                self.assertEqual(first_call[:3], ["python3", "-m", "venv"])
 
         with mock.patch.object(task, "subprocess") as m_sub:
             rc = task.main(["--dry-run", "-v", "run", "--console"])
@@ -137,7 +154,9 @@ class TestTaskRunner(TestCase):
 
     def test_clean_dry_run_outputs(self):
         # Create controlled targets in repo root
-        build = Path("build"); dist = Path("dist"); cache = Path(".pytest_cache")
+        build = Path("build")
+        dist = Path("dist")
+        cache = Path(".pytest_cache")
         for p in (build, dist, cache):
             p.mkdir(parents=True, exist_ok=True)
         try:

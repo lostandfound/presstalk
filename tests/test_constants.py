@@ -24,6 +24,5 @@ class TestConstants(unittest.TestCase):
             self.assertTrue(is_env_enabled(v))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

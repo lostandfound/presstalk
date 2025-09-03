@@ -1,4 +1,3 @@
-import threading
 import time
 from typing import Callable
 
@@ -10,7 +9,14 @@ from .capture import PCMCapture
 class Orchestrator:
     """Wires capture → ring + controller live push, handles press/release lifecycle."""
 
-    def __init__(self, *, controller: Controller, ring: RingBuffer, capture: PCMCapture, paste_fn: Callable[[str], bool]) -> None:
+    def __init__(
+        self,
+        *,
+        controller: Controller,
+        ring: RingBuffer,
+        capture: PCMCapture,
+        paste_fn: Callable[[str], bool],
+    ) -> None:
         self.controller = controller
         self.ring = ring
         self.capture = capture
@@ -31,7 +37,10 @@ class Orchestrator:
     def press(self):
         # pre-count prebuffer bytes (estimated) for stats
         try:
-            n = int(self.controller.bytes_per_second * (self.controller.prebuffer_ms / 1000.0))
+            n = int(
+                self.controller.bytes_per_second
+                * (self.controller.prebuffer_ms / 1000.0)
+            )
             pre = self.ring.snapshot_tail(n) if n > 0 else b""
             self._bytes_sent = len(pre)
         except Exception:
@@ -57,4 +66,8 @@ class Orchestrator:
             bps = int(self.controller.bytes_per_second)
         except Exception:
             bps = 32000
-        return {"bytes": int(self._bytes_sent), "duration_s": dur, "bytes_per_second": bps}
+        return {
+            "bytes": int(self._bytes_sent),
+            "duration_s": dur,
+            "bytes_per_second": bps,
+        }

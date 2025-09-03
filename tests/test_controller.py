@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -38,7 +37,9 @@ class TestController(unittest.TestCase):
         rb = RingBuffer(16)
         rb.write(b"abcdef")
         eng = EngineMock()
-        ctl = Controller(eng, rb, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=1000*2)  # 1s -> 2000 bytes
+        ctl = Controller(
+            eng, rb, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=1000 * 2
+        )  # 1s -> 2000 bytes
         ctl.press()
         self.assertTrue(ctl.is_recording())
         # prebuffer larger than capacity -> entire ring pushed once
@@ -56,13 +57,14 @@ class TestController(unittest.TestCase):
         rb = RingBuffer(8)
         rb.write(b"1234")
         eng = EngineMock()
-        ctl = Controller(eng, rb, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000)
+        ctl = Controller(
+            eng, rb, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000
+        )
         ctl.press()
         ctl.press()
         self.assertEqual(len(eng.started), 1)
         ctl.release(timeout_s=0.1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

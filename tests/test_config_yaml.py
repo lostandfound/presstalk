@@ -4,6 +4,7 @@ import textwrap
 import unittest
 
 import sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from presstalk.config import Config
@@ -69,6 +70,5 @@ class TestConfigYaml(unittest.TestCase):
             os.remove(path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

@@ -1,16 +1,18 @@
-import os
 import subprocess
 from typing import Callable, Optional, Tuple, Dict, Sequence, Union
 from .paste_common import PasteGuard
 
 
-def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = None) -> Dict[str, str]:
+def _get_frontmost_app(
+    *, runner: Optional[Callable[[list], Tuple[int, str]]] = None
+) -> Dict[str, str]:
     """Best-effort frontmost app for Linux.
 
     - X11: use xdotool/xprop to get WM_CLASS or window name
     - Wayland (sway/wlroots): use swaymsg to get focused node app_id/name
     Returns {'name': ...} or empty dict.
     """
+
     def _run_out(cmd: list) -> Tuple[int, str]:
         try:
             out = subprocess.check_output(cmd, text=True)
@@ -25,6 +27,7 @@ def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = 
     if code == 0 and out:
         try:
             import json
+
             tree = json.loads(out)
             # Depth-first search for focused node
             stack = [tree]
@@ -47,7 +50,9 @@ def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = 
         if code == 0 and klass:
             # format: WM_CLASS(STRING) = "xxx", "YYY"
             try:
-                parts = [p.strip().strip('"') for p in klass.split("=", 1)[1].split(",")]
+                parts = [
+                    p.strip().strip('"') for p in klass.split("=", 1)[1].split(",")
+                ]
                 for p in parts:
                     if p:
                         return {"name": p}
@@ -91,14 +96,18 @@ def _set_clipboard(text: str) -> bool:
         pass
     # Try xclip (X11)
     try:
-        p = subprocess.Popen(["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE, text=True)
+        p = subprocess.Popen(
+            ["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE, text=True
+        )
         p.communicate(text, timeout=1)
         return True
     except Exception:
         pass
     # Try xsel (fallback)
     try:
-        p = subprocess.Popen(["xsel", "--clipboard", "--input"], stdin=subprocess.PIPE, text=True)
+        p = subprocess.Popen(
+            ["xsel", "--clipboard", "--input"], stdin=subprocess.PIPE, text=True
+        )
         p.communicate(text, timeout=1)
         return True
     except Exception:
@@ -153,17 +162,23 @@ def insert_text(
     # Try pynput
     try:
         from pynput import keyboard  # type: ignore
+
         kb = keyboard.Controller()
         with kb.pressed(keyboard.Key.ctrl):
-            kb.press('v')
-            kb.release('v')
+            kb.press("v")
+            kb.release("v")
         return True
     except Exception:
         pass
 
     # X11 fallback via xdotool
     try:
-        subprocess.run(["xdotool", "key", "--clearmodifiers", "ctrl+v"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(
+            ["xdotool", "key", "--clearmodifiers", "ctrl+v"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
         return True
     except Exception:
         return False

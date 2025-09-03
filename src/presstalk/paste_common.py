@@ -5,7 +5,9 @@ from .constants import is_env_enabled
 
 class PasteGuard:
     @staticmethod
-    def _normalize_blocklist(blocklist: Optional[Union[str, Sequence[str]]]) -> List[str]:
+    def _normalize_blocklist(
+        blocklist: Optional[Union[str, Sequence[str]]],
+    ) -> List[str]:
         if blocklist is None:
             return []
         if isinstance(blocklist, str):

@@ -1,6 +1,5 @@
 import os
 import sys
-import types
 import unittest
 from types import SimpleNamespace
 from unittest import mock
@@ -19,17 +18,26 @@ class TestCliRefactor(unittest.TestCase):
 
     def test_build_parser_run_flags_parse(self):
         p = cli.build_parser()
-        args = p.parse_args([
-            "run",
-            "--mode", "toggle",
-            "--console",
-            "--hotkey", "cmd",
-            "--log-level", "DEBUG",
-            "--language", "ja",
-            "--model", "small",
-            "--prebuffer-ms", "123",
-            "--min-capture-ms", "456",
-        ])
+        args = p.parse_args(
+            [
+                "run",
+                "--mode",
+                "toggle",
+                "--console",
+                "--hotkey",
+                "cmd",
+                "--log-level",
+                "DEBUG",
+                "--language",
+                "ja",
+                "--model",
+                "small",
+                "--prebuffer-ms",
+                "123",
+                "--min-capture-ms",
+                "456",
+            ]
+        )
         self.assertEqual(args.cmd, "run")
         self.assertEqual(args.mode, "toggle")
         self.assertTrue(args.console)
@@ -44,6 +52,7 @@ class TestCliRefactor(unittest.TestCase):
         p = cli.build_parser()
         args = p.parse_args(["--version"])
         self.assertTrue(args.version)
+
     def test_find_repo_config_prefers_explicit(self):
         explicit = os.path.abspath("presstalk.yaml")
         self.assertTrue(os.path.isfile(explicit))
@@ -60,12 +69,14 @@ class TestCliRefactor(unittest.TestCase):
     def test_run_simulate_happy_path(self):
         args = SimpleNamespace(config=None, chunks=["aa"], delay_ms=1)
         # Patch heavy deps
-        with mock.patch.object(cli, "print_logo"), \
-             mock.patch.object(cli, "RingBuffer") as m_ring, \
-             mock.patch.object(cli, "DummyAsrEngine") as m_eng, \
-             mock.patch.object(cli, "Controller") as m_ctl, \
-             mock.patch.object(cli, "PCMCapture") as m_cap, \
-             mock.patch.object(cli, "Orchestrator") as m_orch:
+        with (
+            mock.patch.object(cli, "print_logo"),
+            mock.patch.object(cli, "RingBuffer") as _m_ring,
+            mock.patch.object(cli, "DummyAsrEngine") as _m_eng,
+            mock.patch.object(cli, "Controller") as _m_ctl,
+            mock.patch.object(cli, "PCMCapture") as m_cap,
+            mock.patch.object(cli, "Orchestrator") as m_orch,
+        ):
             m_cap.return_value.is_running.return_value = False
             m_orch.return_value.press.return_value = None
             m_orch.return_value.release.return_value = "ok"
@@ -96,11 +107,13 @@ class TestCliRefactor(unittest.TestCase):
                 self.capture = FakeCapture()
                 self.is_finalizing = False
 
-        with mock.patch.object(cli, "_build_run_orchestrator", return_value=FakeOrch()), \
-             mock.patch.object(cli, "get_logger") as m_logger, \
-             mock.patch.object(cli, "HotkeyHandler") as m_hk, \
-             mock.patch.object(cli, "_StatusOrch", side_effect=lambda o: o), \
-             mock.patch("builtins.input", side_effect=["q"]):
+        with (
+            mock.patch.object(cli, "_build_run_orchestrator", return_value=FakeOrch()),
+            mock.patch.object(cli, "get_logger") as m_logger,
+            mock.patch.object(cli, "HotkeyHandler") as _m_hk,
+            mock.patch.object(cli, "_StatusOrch", side_effect=lambda o: o),
+            mock.patch("builtins.input", side_effect=["q"]),
+        ):
             rc = cli._run_ptt(args)
             self.assertEqual(rc, 0)
             # Quiet level set

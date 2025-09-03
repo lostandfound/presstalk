@@ -83,7 +83,9 @@ def task_clean(dry_run: bool, verbose: bool) -> None:
 
 
 def task_install(dry_run: bool, verbose: bool) -> None:
-    code = run_cmd(["uv", "pip", "install", "-e", "."], dry_run=dry_run, verbose=verbose)
+    code = run_cmd(
+        ["uv", "pip", "install", "-e", "."], dry_run=dry_run, verbose=verbose
+    )
     if code != 0:
         raise TaskError(f"install failed with exit code {code}")
 
@@ -111,7 +113,12 @@ def task_test(file: Optional[str], dry_run: bool, verbose: bool) -> None:
         raise TaskError(f"tests failed with exit code {code}")
 
 
-def task_simulate(chunks: Optional[Iterable[str]], delay_ms: Optional[int], dry_run: bool, verbose: bool) -> None:
+def task_simulate(
+    chunks: Optional[Iterable[str]],
+    delay_ms: Optional[int],
+    dry_run: bool,
+    verbose: bool,
+) -> None:
     args: List[str] = ["uv", "run", "presstalk", "simulate"]
     if chunks:
         args.append("--chunks")
@@ -135,7 +142,9 @@ def task_run(console: bool, dry_run: bool, verbose: bool) -> None:
 def task_lint(dry_run: bool, verbose: bool) -> None:
     # Prefer ruff, fallback to flake8; otherwise no-op message
     if which("ruff"):
-        code = run_cmd(["uv", "run", "ruff", "check", "."], dry_run=dry_run, verbose=verbose)
+        code = run_cmd(
+            ["uv", "run", "ruff", "check", "."], dry_run=dry_run, verbose=verbose
+        )
         if code != 0:
             raise TaskError("lint failed")
         return
@@ -150,7 +159,9 @@ def task_lint(dry_run: bool, verbose: bool) -> None:
 def task_format(dry_run: bool, verbose: bool) -> None:
     # Prefer ruff format, fallback to black; otherwise no-op message
     if which("ruff"):
-        code = run_cmd(["uv", "run", "ruff", "format", "."], dry_run=dry_run, verbose=verbose)
+        code = run_cmd(
+            ["uv", "run", "ruff", "format", "."], dry_run=dry_run, verbose=verbose
+        )
         if code != 0:
             raise TaskError("format failed")
         return
@@ -164,8 +175,12 @@ def task_format(dry_run: bool, verbose: bool) -> None:
 
 def task_install_global(dry_run: bool, verbose: bool) -> None:
     if not which("uv"):
-        raise TaskError("'uv' not found; install uv or use 'bootstrap' (will try pipx/venv)")
-    code = run_cmd(["uv", "tool", "install", "--editable", "."], dry_run=dry_run, verbose=verbose)
+        raise TaskError(
+            "'uv' not found; install uv or use 'bootstrap' (will try pipx/venv)"
+        )
+    code = run_cmd(
+        ["uv", "tool", "install", "--editable", "."], dry_run=dry_run, verbose=verbose
+    )
     if code != 0:
         raise TaskError("install-global failed")
     print("Installed as a user tool. Ensure ~/.local/bin (or equivalent) is in PATH.")
@@ -174,17 +189,25 @@ def task_install_global(dry_run: bool, verbose: bool) -> None:
 def task_bootstrap(dry_run: bool, verbose: bool) -> None:
     # 1) Prefer uv tool install (global shim)
     if which("uv"):
-        code = run_cmd(["uv", "tool", "install", "--editable", "."], dry_run=dry_run, verbose=verbose)
+        code = run_cmd(
+            ["uv", "tool", "install", "--editable", "."],
+            dry_run=dry_run,
+            verbose=verbose,
+        )
         if code != 0:
             raise TaskError("bootstrap: uv tool install failed")
-        print("[ok] presstalk installed globally via uv. If not found, add ~/.local/bin to PATH.")
+        print(
+            "[ok] presstalk installed globally via uv. If not found, add ~/.local/bin to PATH."
+        )
         return
     # 2) Fallback to pipx if available
     if which("pipx"):
         code = run_cmd(["pipx", "install", "."], dry_run=dry_run, verbose=verbose)
         if code != 0:
             raise TaskError("bootstrap: pipx install failed")
-        print("[ok] presstalk installed globally via pipx. Run 'pipx ensurepath' if needed.")
+        print(
+            "[ok] presstalk installed globally via pipx. Run 'pipx ensurepath' if needed."
+        )
         return
     # 3) Final fallback: create venv under ~/.venvs/presstalk and print usage
     home = Path.home()
@@ -192,8 +215,22 @@ def task_bootstrap(dry_run: bool, verbose: bool) -> None:
     py = "python" if sys.platform == "win32" else "python3"
     cmds = [
         [py, "-m", "venv", str(venv_dir)],
-        [str(venv_dir / ("Scripts" if sys.platform == "win32" else "bin") / py), "-m", "pip", "install", "-U", "pip"],
-        [str(venv_dir / ("Scripts" if sys.platform == "win32" else "bin") / py), "-m", "pip", "install", "-e", "."],
+        [
+            str(venv_dir / ("Scripts" if sys.platform == "win32" else "bin") / py),
+            "-m",
+            "pip",
+            "install",
+            "-U",
+            "pip",
+        ],
+        [
+            str(venv_dir / ("Scripts" if sys.platform == "win32" else "bin") / py),
+            "-m",
+            "pip",
+            "install",
+            "-e",
+            ".",
+        ],
     ]
     for c in cmds:
         code = run_cmd(c, dry_run=dry_run, verbose=verbose)
@@ -204,35 +241,53 @@ def task_bootstrap(dry_run: bool, verbose: bool) -> None:
     if sys.platform == "win32":
         print(f"Run: {exe} run")
     else:
-        print(f"Add alias, e.g.: echo \"alias pt='{exe} run'\" >> ~/.zshrc && source ~/.zshrc")
+        print(
+            f"Add alias, e.g.: echo \"alias pt='{exe} run'\" >> ~/.zshrc && source ~/.zshrc"
+        )
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="task.py", description="Cross-platform tasks for PressTalk")
-    p.add_argument("--dry-run", "-n", action="store_true", help="Show actions without executing")
+    p = argparse.ArgumentParser(
+        prog="task.py", description="Cross-platform tasks for PressTalk"
+    )
+    p.add_argument(
+        "--dry-run", "-n", action="store_true", help="Show actions without executing"
+    )
     p.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
 
     sp = p.add_subparsers(dest="task", required=True)
 
-    sp_clean = sp.add_parser("clean", help="Remove build artifacts and caches")
+    _sp_clean = sp.add_parser("clean", help="Remove build artifacts and caches")
 
-    sp_install = sp.add_parser("install", help="Editable install via uv")
+    _sp_install = sp.add_parser("install", help="Editable install via uv")
 
     sp_test = sp.add_parser("test", help="Run unit tests")
-    sp_test.add_argument("--file", help="Run a specific test file (e.g., tests/test_controller.py)")
+    sp_test.add_argument(
+        "--file", help="Run a specific test file (e.g., tests/test_controller.py)"
+    )
 
     sp_sim = sp.add_parser("simulate", help="Run simulated capture")
-    sp_sim.add_argument("--chunks", nargs="+", help="Text chunks to simulate (space-separated)")
-    sp_sim.add_argument("--delay-ms", type=int, default=None, help="Inter-chunk delay in ms")
+    sp_sim.add_argument(
+        "--chunks", nargs="+", help="Text chunks to simulate (space-separated)"
+    )
+    sp_sim.add_argument(
+        "--delay-ms", type=int, default=None, help="Inter-chunk delay in ms"
+    )
 
     sp_run = sp.add_parser("run", help="Run PressTalk locally")
-    sp_run.add_argument("--console", action="store_true", help="Use console mode instead of global hotkey")
+    sp_run.add_argument(
+        "--console",
+        action="store_true",
+        help="Use console mode instead of global hotkey",
+    )
 
     sp.add_parser("lint", help="Run linter if available (ruff/flake8)")
     sp.add_parser("format", help="Run formatter if available (ruff/black)")
 
     sp.add_parser("install-global", help="Install globally via uv tool (shim)")
-    sp.add_parser("bootstrap", help="One-shot setup: uv tool install or pipx, fallback to venv")
+    sp.add_parser(
+        "bootstrap", help="One-shot setup: uv tool install or pipx, fallback to venv"
+    )
 
     sp.add_parser("help", help="Show this help")
 
@@ -254,7 +309,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         elif args.task == "test":
             task_test(getattr(args, "file", None), dry, verbose)
         elif args.task == "simulate":
-            task_simulate(getattr(args, "chunks", None), getattr(args, "delay_ms", None), dry, verbose)
+            task_simulate(
+                getattr(args, "chunks", None),
+                getattr(args, "delay_ms", None),
+                dry,
+                verbose,
+            )
         elif args.task == "run":
             task_run(getattr(args, "console", False), dry, verbose)
         elif args.task == "lint":

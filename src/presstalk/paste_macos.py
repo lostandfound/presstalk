@@ -1,14 +1,16 @@
-import os
 import subprocess
 from typing import Callable, Optional, Tuple, Dict, Sequence, Union
 from .paste_common import PasteGuard
 
 
-def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = None) -> Dict[str, str]:
+def _get_frontmost_app(
+    *, runner: Optional[Callable[[list], Tuple[int, str]]] = None
+) -> Dict[str, str]:
     """Return {'name': ..., 'bundle_id': ...} of frontmost app or empty dict on failure.
 
     runner should execute a command list and return (exit_code, stdout_text).
     """
+
     def _run(cmd: list) -> Tuple[int, str]:
         try:
             out = subprocess.check_output(cmd, text=True)
@@ -19,10 +21,22 @@ def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = 
     runner = runner or _run
     name = ""
     bid = ""
-    code, out = runner(["osascript", "-e", 'tell application "System Events" to get name of (first process whose frontmost is true)'])
+    code, out = runner(
+        [
+            "osascript",
+            "-e",
+            'tell application "System Events" to get name of (first process whose frontmost is true)',
+        ]
+    )
     if code == 0:
         name = out
-    code, out = runner(["osascript", "-e", 'tell application "System Events" to get bundle identifier of (first process whose frontmost is true)'])
+    code, out = runner(
+        [
+            "osascript",
+            "-e",
+            'tell application "System Events" to get bundle identifier of (first process whose frontmost is true)',
+        ]
+    )
     if code == 0:
         bid = out
     return {k: v for k, v in {"name": name, "bundle_id": bid}.items() if v}
@@ -73,13 +87,26 @@ def insert_text(
 
     # simulate Cmd+V via osascript
     if run_cmd is None:
+
         def _runner(cmd: list) -> int:
             try:
-                subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(
+                    cmd,
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
                 return 0
             except Exception:
                 return 1
+
         run_cmd = _runner
 
-    code = run_cmd(["osascript", "-e", 'tell application "System Events" to keystroke "v" using command down'])
+    code = run_cmd(
+        [
+            "osascript",
+            "-e",
+            'tell application "System Events" to keystroke "v" using command down',
+        ]
+    )
     return code == 0

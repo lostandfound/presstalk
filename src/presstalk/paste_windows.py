@@ -1,4 +1,3 @@
-import os
 import subprocess
 import ctypes
 from ctypes import wintypes
@@ -6,7 +5,9 @@ from typing import Callable, Optional, Tuple, Dict, Sequence, Union
 from .paste_common import PasteGuard
 
 
-def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = None) -> Dict[str, str]:
+def _get_frontmost_app(
+    *, runner: Optional[Callable[[list], Tuple[int, str]]] = None
+) -> Dict[str, str]:
     """Return {'name': ...} of the foreground process on Windows or empty dict on failure.
 
     runner is unused on Windows implementation but kept for signature parity/testing.
@@ -16,7 +17,10 @@ def _get_frontmost_app(*, runner: Optional[Callable[[list], Tuple[int, str]]] = 
         GetForegroundWindow = user32.GetForegroundWindow
         GetWindowThreadProcessId = user32.GetWindowThreadProcessId
         GetForegroundWindow.restype = wintypes.HWND
-        GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+        GetWindowThreadProcessId.argtypes = [
+            wintypes.HWND,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
         hwnd = GetForegroundWindow()
         pid = wintypes.DWORD(0)
         GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
@@ -93,10 +97,11 @@ def insert_text(
 
     try:
         from pynput import keyboard  # type: ignore
+
         kb = keyboard.Controller()
         with kb.pressed(keyboard.Key.ctrl):
-            kb.press('v')
-            kb.release('v')
+            kb.press("v")
+            kb.release("v")
         return True
     except Exception:
         return False
