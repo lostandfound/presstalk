@@ -1,4 +1,4 @@
-from typing import Optional, Iterable, Tuple
+from typing import Optional, Tuple
 
 # Canonical falsy string representations used for env toggles
 FALSY_VALUES: Tuple[str, ...] = ("0", "false")
@@ -15,4 +15,3 @@ def is_env_enabled(env_var: Optional[str], default: bool = True) -> bool:
         return default
     val = env_var.strip().lower()
     return val not in FALSY_VALUES
-

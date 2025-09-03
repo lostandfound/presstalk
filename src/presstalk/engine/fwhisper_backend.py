@@ -1,5 +1,4 @@
 from typing import Optional
-import sys
 
 
 class FasterWhisperBackend:
@@ -24,25 +23,25 @@ class FasterWhisperBackend:
         self._beam_size = int(beam_size)
         self._show_progress = show_progress
         self._model = None
-        
+
         # Load model during initialization instead of lazy loading
         self._ensure_model()
 
     def _ensure_model(self):
         if self._model is not None:
             return
-        
+
         # Show progress if requested
         if self._show_progress:
             print(f"Loading ASR model ({self._model_name})...", end="", flush=True)
-            
+
         try:
             from faster_whisper import WhisperModel  # type: ignore
         except Exception as e:
             if self._show_progress:
                 print(" FAILED")
             raise RuntimeError("faster-whisper is not installed") from e
-            
+
         kwargs = {}
         if self._device:
             kwargs["device"] = self._device
@@ -51,7 +50,7 @@ class FasterWhisperBackend:
         else:
             # Default to float32 to avoid ctranslate2 warnings about float16 conversion
             kwargs["compute_type"] = "float32"
-            
+
         try:
             self._model = WhisperModel(self._model_name, **kwargs)
             if self._show_progress:
@@ -61,7 +60,9 @@ class FasterWhisperBackend:
                 print(" FAILED")
             raise RuntimeError(f"Failed to load model '{self._model_name}': {e}") from e
 
-    def transcribe(self, pcm_bytes: bytes, *, sample_rate: int, language: str, model: str) -> str:
+    def transcribe(
+        self, pcm_bytes: bytes, *, sample_rate: int, language: str, model: str
+    ) -> str:
         if not pcm_bytes:
             return ""
         # Model is already loaded during initialization

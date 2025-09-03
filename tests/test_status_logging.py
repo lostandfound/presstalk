@@ -14,8 +14,10 @@ class FakeOrch:
         class Ctl:
             def __init__(self):
                 self._rec = True
+
             def is_recording(self):
                 return self._rec
+
         self.controller = Ctl()
         self._sleep = sleep_s
 
@@ -53,5 +55,5 @@ class TestStatusLogging(unittest.TestCase):
         self.assertEqual(out, [])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

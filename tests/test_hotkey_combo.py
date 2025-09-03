@@ -12,6 +12,7 @@ class FakeKey:
     def __init__(self, name, char=None):
         self._name = name
         self.char = char
+
     def __repr__(self):
         return f"<Key {self._name}>"
 
@@ -43,12 +44,14 @@ class TestHotkeyCombo(unittest.TestCase):
     def test_parse_and_normalize_aliases(self):
         # parse function to be added in hotkey backend module
         from presstalk.hotkey_pynput import normalize_hotkey
+
         self.assertEqual(normalize_hotkey("Control+Shift+X"), "ctrl+shift+x")
         self.assertEqual(normalize_hotkey("Cmd+Option+V"), "cmd+alt+v")
         self.assertEqual(normalize_hotkey("SHIFT+SPACE"), "shift+space")
 
     def test_validate_invalid_hotkeys(self):
         from presstalk.hotkey_pynput import validate_hotkey
+
         # invalid: only modifiers with no primary (except legacy single-modifier allowed)
         self.assertFalse(validate_hotkey("ctrl+alt"))
         # invalid: empty
@@ -61,14 +64,20 @@ class TestHotkeyCombo(unittest.TestCase):
     def test_combo_match_shift_space(self):
         # Patch keyboard with fake, and intercept HotkeyHandler calls
         from presstalk import hotkey_pynput as hp
+
         with mock.patch.object(hp, "keyboard", FakeKeyboard):
             calls = []
+
             class FakeOrch:
                 def press(self):
                     calls.append("press")
+
                 def release(self):
                     calls.append("release")
-            runner = hp.GlobalHotkeyRunner(FakeOrch(), mode='hold', key_name='shift+space')
+
+            runner = hp.GlobalHotkeyRunner(
+                FakeOrch(), mode="hold", key_name="shift+space"
+            )
             # press shift (no trigger yet)
             runner._on_press(FakeKeyboard.Key.shift)
             self.assertEqual(calls, [])
@@ -81,26 +90,31 @@ class TestHotkeyCombo(unittest.TestCase):
 
     def test_combo_match_ctrl_shift_x(self):
         from presstalk import hotkey_pynput as hp
+
         with mock.patch.object(hp, "keyboard", FakeKeyboard):
             calls = []
+
             class FakeOrch:
                 def press(self):
                     calls.append("press")
+
                 def release(self):
                     calls.append("release")
-            runner = hp.GlobalHotkeyRunner(FakeOrch(), mode='hold', key_name='ctrl+shift+x')
+
+            runner = hp.GlobalHotkeyRunner(
+                FakeOrch(), mode="hold", key_name="ctrl+shift+x"
+            )
             # press ctrl and shift first
             runner._on_press(FakeKeyboard.Key.ctrl)
             runner._on_press(FakeKeyboard.Key.shift)
             self.assertEqual(calls, [])
             # press 'x' as a character
-            runner._on_press(FakeKey("char", char='x'))
+            runner._on_press(FakeKey("char", char="x"))
             self.assertEqual(calls, ["press"])  # combo activated
             # release shift breaks combo
             runner._on_release(FakeKeyboard.Key.shift)
             self.assertEqual(calls, ["press", "release"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

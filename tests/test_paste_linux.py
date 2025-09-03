@@ -18,13 +18,20 @@ class TestPasteLinux(unittest.TestCase):
             calls["clip"] += 1
             return True
 
-        ok = insert_text("hello", run_cmd=runner, clipboard_fn=clipboard_fn, frontmost_getter=lambda: {"name": "gedit"})
+        ok = insert_text(
+            "hello",
+            run_cmd=runner,
+            clipboard_fn=clipboard_fn,
+            frontmost_getter=lambda: {"name": "gedit"},
+        )
         self.assertTrue(ok)
         self.assertEqual(calls["clip"], 1)
         self.assertEqual(calls["run"], 1)
 
     def test_insert_none_returns_true(self):
-        self.assertTrue(insert_text(None, run_cmd=lambda _: 0, clipboard_fn=lambda t: True))
+        self.assertTrue(
+            insert_text(None, run_cmd=lambda _: 0, clipboard_fn=lambda t: True)
+        )
 
     def test_paste_guard_blocks_terminal(self):
         calls = {"run": 0, "clip": 0}
@@ -40,7 +47,9 @@ class TestPasteLinux(unittest.TestCase):
         def fg():
             return {"name": "gnome-terminal"}
 
-        ok = insert_text("hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn)
+        ok = insert_text(
+            "hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn
+        )
         self.assertFalse(ok)
         self.assertEqual(calls["run"], 0)
         self.assertEqual(calls["clip"], 0)
@@ -52,7 +61,9 @@ class TestPasteLinux(unittest.TestCase):
         def bad_run(_):
             raise RuntimeError("boom")
 
-        ok = insert_text("hello", run_cmd=bad_run, clipboard_fn=bad_clip, frontmost_getter=lambda: {})
+        ok = insert_text(
+            "hello", run_cmd=bad_run, clipboard_fn=bad_clip, frontmost_getter=lambda: {}
+        )
         self.assertFalse(ok)
 
 

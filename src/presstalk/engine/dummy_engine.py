@@ -26,4 +26,3 @@ class DummyAsrEngine:
 
     def close_session(self, session_id: str) -> None:
         self._bufs.pop(session_id, None)
-

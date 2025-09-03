@@ -24,7 +24,9 @@ class TestPasteWindows(unittest.TestCase):
         self.assertEqual(calls["run"], 1)
 
     def test_insert_none_returns_true(self):
-        self.assertTrue(insert_text(None, run_cmd=lambda _: 0, clipboard_fn=lambda t: True))
+        self.assertTrue(
+            insert_text(None, run_cmd=lambda _: 0, clipboard_fn=lambda t: True)
+        )
 
     def test_paste_guard_blocks_terminal(self):
         calls = {"run": 0, "clip": 0}
@@ -40,7 +42,9 @@ class TestPasteWindows(unittest.TestCase):
         def fg():
             return {"name": "WindowsTerminal.exe"}
 
-        ok = insert_text("hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn)
+        ok = insert_text(
+            "hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn
+        )
         self.assertFalse(ok)
         self.assertEqual(calls["run"], 0)
         self.assertEqual(calls["clip"], 0)
@@ -59,7 +63,9 @@ class TestPasteWindows(unittest.TestCase):
         def fg():
             return {"name": "notepad.exe"}
 
-        ok = insert_text("hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn)
+        ok = insert_text(
+            "hello", run_cmd=runner, frontmost_getter=fg, clipboard_fn=clipboard_fn
+        )
         self.assertTrue(ok)
         self.assertEqual(calls["run"], 1)
         self.assertEqual(calls["clip"], 1)

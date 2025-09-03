@@ -1,4 +1,4 @@
-from typing import Callable, Tuple
+from typing import Callable
 
 
 QUIET = 0
@@ -7,7 +7,9 @@ DEBUG = 2
 
 
 class Logger:
-    def __init__(self, level: int = INFO, sink: Callable[[str, str], None] = None) -> None:
+    def __init__(
+        self, level: int = INFO, sink: Callable[[str, str], None] = None
+    ) -> None:
         self.level = level
         self.sink = sink or (lambda lvl, msg: print(msg))
 
@@ -36,4 +38,3 @@ def get_logger() -> Logger:
 def set_logger(logger: Logger) -> None:
     global _global
     _global = logger
-

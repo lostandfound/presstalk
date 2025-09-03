@@ -2,7 +2,7 @@ from typing import Optional, Set, List, Dict
 
 try:
     from pynput import keyboard
-except Exception as e:  # pragma: no cover - optional dep
+except Exception:  # pragma: no cover - optional dep
     keyboard = None  # type: ignore
 
 from .hotkey import HotkeyHandler
@@ -11,17 +11,24 @@ from .hotkey import HotkeyHandler
 # ---- Hotkey parsing and validation ----
 
 _MOD_ALIASES: Dict[str, str] = {
-    'control': 'ctrl', 'ctl': 'ctrl', 'ctrl': 'ctrl',
-    'command': 'cmd', 'cmd': 'cmd', 'win': 'cmd', 'meta': 'cmd',
-    'option': 'alt', 'alt': 'alt',
-    'shift': 'shift',
+    "control": "ctrl",
+    "ctl": "ctrl",
+    "ctrl": "ctrl",
+    "command": "cmd",
+    "cmd": "cmd",
+    "win": "cmd",
+    "meta": "cmd",
+    "option": "alt",
+    "alt": "alt",
+    "shift": "shift",
 }
 
 _KNOWN_NONMOD_ALIASES: Dict[str, str] = {
-    'spacebar': 'space', ' ': 'space',
+    "spacebar": "space",
+    " ": "space",
 }
 
-_MOD_ORDER = ['cmd', 'ctrl', 'alt', 'shift']
+_MOD_ORDER = ["cmd", "ctrl", "alt", "shift"]
 
 
 def normalize_hotkey(spec: str) -> str:
@@ -34,7 +41,7 @@ def normalize_hotkey(spec: str) -> str:
     """
     if not spec:
         return ""
-    parts = [p.strip() for p in str(spec).split('+') if p.strip()]
+    parts = [p.strip() for p in str(spec).split("+") if p.strip()]
     mods: Set[str] = set()
     primary: Optional[str] = None
     for p in parts:
@@ -65,7 +72,7 @@ def validate_hotkey(spec: str) -> bool:
     norm = normalize_hotkey(spec)
     if not norm:
         return False
-    parts = norm.split('+')
+    parts = norm.split("+")
     mods = [p for p in parts if p in _MOD_ORDER]
     nonmods = [p for p in parts if p not in _MOD_ORDER]
     if len(nonmods) > 1:
@@ -90,11 +97,13 @@ class GlobalHotkeyRunner:
     Requires Accessibility permission on macOS.
     """
 
-    def __init__(self, orchestrator, *, mode: str = 'hold', key_name: str = 'shift+space') -> None:
+    def __init__(
+        self, orchestrator, *, mode: str = "hold", key_name: str = "shift+space"
+    ) -> None:
         if keyboard is None:
             raise RuntimeError("pynput is not installed")
         self._handler = HotkeyHandler(orchestrator, mode=mode)
-        self._key_spec = normalize_hotkey(key_name or 'shift+space')
+        self._key_spec = normalize_hotkey(key_name or "shift+space")
         if not validate_hotkey(self._key_spec):
             raise ValueError(f"Invalid hotkey: {key_name}")
         self._listener: Optional[keyboard.Listener] = None
@@ -105,7 +114,7 @@ class GlobalHotkeyRunner:
         self._build_required_groups()
 
     def _build_required_groups(self) -> None:
-        parts = self._key_spec.split('+') if self._key_spec else []
+        parts = self._key_spec.split("+") if self._key_spec else []
         mods = [p for p in parts if p in _MOD_ORDER]
         nonmods = [p for p in parts if p not in _MOD_ORDER]
         # For each modifier, accept either side variants
@@ -115,7 +124,7 @@ class GlobalHotkeyRunner:
             keyobj = getattr(keyboard.Key, base, None)
             if keyobj is not None:
                 variants.add(keyobj)
-            for suffix in ('_l', '_r'):
+            for suffix in ("_l", "_r"):
                 keyobj = getattr(keyboard.Key, base + suffix, None)
                 if keyobj is not None:
                     variants.add(keyobj)
@@ -136,8 +145,8 @@ class GlobalHotkeyRunner:
         token = getattr(key, "char", None)
         if token is not None:
             token = str(token).lower()
-            if token == ' ':
-                token = 'space'
+            if token == " ":
+                token = "space"
             self._pressed.add(token)
         else:
             self._pressed.add(key)
@@ -147,8 +156,8 @@ class GlobalHotkeyRunner:
         token = getattr(key, "char", None)
         if token is not None:
             token = str(token).lower()
-            if token == ' ':
-                token = 'space'
+            if token == " ":
+                token = "space"
             self._pressed.discard(token)
         else:
             self._pressed.discard(key)
@@ -174,7 +183,9 @@ class GlobalHotkeyRunner:
             self._handler.handle_key_up()
 
     def start(self) -> None:
-        self._listener = keyboard.Listener(on_press=self._on_press, on_release=self._on_release)
+        self._listener = keyboard.Listener(
+            on_press=self._on_press, on_release=self._on_release
+        )
         self._listener.start()
 
     def stop(self) -> None:

@@ -30,10 +30,12 @@ class DummySource:
 class TestCapture(unittest.TestCase):
     def setUp(self):
         from presstalk.ring_buffer import RingBuffer  # lazy import
+
         self.RingBuffer = RingBuffer
 
     def test_emits_all_chunks_and_finishes(self):
         from presstalk.capture import PCMCapture
+
         src = DummySource([b"aa", b"bb", b"cc"], delay_s=0.0)
         out = []
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
@@ -50,6 +52,7 @@ class TestCapture(unittest.TestCase):
 
     def test_stop_early(self):
         from presstalk.capture import PCMCapture
+
         # many chunks with delay; we will stop early
         src = DummySource([b"x"] * 100, delay_s=0.01)
         out = []
@@ -64,6 +67,7 @@ class TestCapture(unittest.TestCase):
 
     def test_write_into_ring(self):
         from presstalk.capture import PCMCapture
+
         ring = self.RingBuffer(16)
         src = DummySource([b"abcd", b"efgh"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
@@ -75,6 +79,5 @@ class TestCapture(unittest.TestCase):
         self.assertEqual(ring.snapshot_tail(16), b"abcdefgh")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

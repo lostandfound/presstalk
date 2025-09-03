@@ -39,11 +39,18 @@ class TestOrchestrator(unittest.TestCase):
         # preload prebuffer
         ring.write(b"PRE")
         eng = DummyAsrEngine()
-        ctl = Controller(eng, ring, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=100)  # 1s -> 100 bytes
+        ctl = Controller(
+            eng, ring, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=100
+        )  # 1s -> 100 bytes
         src = DummySource([b"aa", b"bb", b"cc"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
         pasted = {}
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: pasted.setdefault('t', t) or True)
+        orch = Orchestrator(
+            controller=ctl,
+            ring=ring,
+            capture=cap,
+            paste_fn=lambda t: pasted.setdefault("t", t) or True,
+        )
 
         orch.press()
         # wait a moment for capture to run
@@ -52,19 +59,23 @@ class TestOrchestrator(unittest.TestCase):
                 break
             time.sleep(0.005)
         text = orch.release()
-        self.assertTrue(text.startswith('bytes='))
+        self.assertTrue(text.startswith("bytes="))
         # PRE(3) + aa bb cc (6) = 9 bytes
-        self.assertIn('bytes=9', text)
-        self.assertEqual(pasted.get('t'), text)
+        self.assertIn("bytes=9", text)
+        self.assertEqual(pasted.get("t"), text)
 
     def test_stats_include_prebuffer_and_live(self):
         ring = RingBuffer(64)
         ring.write(b"PRE")  # 3 bytes prebuffer
         eng = DummyAsrEngine()
-        ctl = Controller(eng, ring, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=1000*2)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=1000, min_capture_ms=0, bytes_per_second=1000 * 2
+        )
         src = DummySource([b"aa", b"bb"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True)
+        orch = Orchestrator(
+            controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True
+        )
         orch.press()
         for _ in range(50):
             if not cap.is_running():
@@ -73,16 +84,20 @@ class TestOrchestrator(unittest.TestCase):
         _ = orch.release()
         st = orch.stats()
         # expect 3(prebuffer)+2+2=7 bytes
-        self.assertGreaterEqual(st.get('bytes', 0), 7)
+        self.assertGreaterEqual(st.get("bytes", 0), 7)
 
     def test_prebuffer_zero_counts_only_live(self):
         ring = RingBuffer(64)
         ring.write(b"PRE")
         eng = DummyAsrEngine()
-        ctl = Controller(eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=1000*2)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=1000 * 2
+        )
         src = DummySource([b"aa", b"bb"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True)
+        orch = Orchestrator(
+            controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True
+        )
         orch.press()
         for _ in range(50):
             if not cap.is_running():
@@ -91,18 +106,22 @@ class TestOrchestrator(unittest.TestCase):
         _ = orch.release()
         st = orch.stats()
         # only live 2+2 bytes
-        self.assertGreaterEqual(st.get('bytes', 0), 4)
-        self.assertLess(st.get('bytes', 0), 7)
+        self.assertGreaterEqual(st.get("bytes", 0), 4)
+        self.assertLess(st.get("bytes", 0), 7)
 
     def test_prebuffer_large_uses_ring_size(self):
         ring = RingBuffer(4)
         ring.write(b"ABCD")  # 4 bytes in ring
         eng = DummyAsrEngine()
         # prebuffer_ms translates to a large requested prebuffer; ring caps at 4
-        ctl = Controller(eng, ring, prebuffer_ms=2000, min_capture_ms=0, bytes_per_second=1000*2)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=2000, min_capture_ms=0, bytes_per_second=1000 * 2
+        )
         src = DummySource([b"x"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True)
+        orch = Orchestrator(
+            controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True
+        )
         orch.press()
         for _ in range(50):
             if not cap.is_running():
@@ -111,28 +130,36 @@ class TestOrchestrator(unittest.TestCase):
         _ = orch.release()
         st = orch.stats()
         # at least 4 bytes from ring + 1 live
-        self.assertGreaterEqual(st.get('bytes', 0), 5)
+        self.assertGreaterEqual(st.get("bytes", 0), 5)
 
     def test_no_paste_on_empty_finalize(self):
         class EmptyEngine(DummyAsrEngine):
             def finalize(self, session_id: str, timeout_s: float = 10.0) -> str:
-                return ''
+                return ""
+
         ring = RingBuffer(32)
         eng = EmptyEngine()
-        ctl = Controller(eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000
+        )
         src = DummySource([b"aa", b"bb"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
-        called = { 'cnt': 0 }
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: called.__setitem__('cnt', called['cnt']+1) or True)
+        called = {"cnt": 0}
+        orch = Orchestrator(
+            controller=ctl,
+            ring=ring,
+            capture=cap,
+            paste_fn=lambda t: called.__setitem__("cnt", called["cnt"] + 1) or True,
+        )
         orch.press()
         for _ in range(50):
             if not cap.is_running():
                 break
             time.sleep(0.005)
         out = orch.release()
-        self.assertEqual(out, '')
-        self.assertEqual(called['cnt'], 0)
+        self.assertEqual(out, "")
+        self.assertEqual(called["cnt"], 0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

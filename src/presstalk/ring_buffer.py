@@ -37,4 +37,3 @@ class RingBuffer:
         if n >= len(self._buf):
             return bytes(self._buf)
         return bytes(self._buf[-n:])
-

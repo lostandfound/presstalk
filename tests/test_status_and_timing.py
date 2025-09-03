@@ -17,14 +17,17 @@ class DummySource:
     def __init__(self, chunks, delay_s=0.0):
         self._chunks = list(chunks)
         self._delay = delay_s
+
     def start(self):
         pass
+
     def read(self, nbytes: int):
         if self._delay:
             time.sleep(self._delay)
         if not self._chunks:
             return None
         return self._chunks.pop(0)
+
     def stop(self):
         pass
 
@@ -33,7 +36,9 @@ class TestStatusAndTiming(unittest.TestCase):
     def test_status_orch_prevents_double_release(self):
         ring = RingBuffer(16)
         eng = DummyAsrEngine()
-        ctl = Controller(eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=0, min_capture_ms=0, bytes_per_second=32000
+        )
         src = DummySource([b"aa"], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
         calls = {"release": 0}
@@ -57,11 +62,15 @@ class TestStatusAndTiming(unittest.TestCase):
         ring = RingBuffer(8)
         eng = DummyAsrEngine()
         # require at least 80ms capture
-        ctl = Controller(eng, ring, prebuffer_ms=0, min_capture_ms=80, bytes_per_second=32000)
+        ctl = Controller(
+            eng, ring, prebuffer_ms=0, min_capture_ms=80, bytes_per_second=32000
+        )
         # no live audio
         src = DummySource([], delay_s=0.0)
         cap = PCMCapture(sample_rate=16000, channels=1, chunk_ms=10, source=src)
-        orch = Orchestrator(controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True)
+        orch = Orchestrator(
+            controller=ctl, ring=ring, capture=cap, paste_fn=lambda t: True
+        )
         orch.press()
         t0 = time.time()
         _ = orch.release()
@@ -69,6 +78,5 @@ class TestStatusAndTiming(unittest.TestCase):
         self.assertGreaterEqual(dt, 70.0)  # allow small scheduling jitter
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
-

@@ -2,6 +2,7 @@
 
 ## Project Structure & Module Organization
 - Source: `src/presstalk/` (CLI in `cli.py`, runtime config in `config.py`, audio in `capture*.py`, hotkeys in `hotkey*.py`, engine backends under `engine/`).
+- Hotkey combos: parsing/validation via `normalize_hotkey`/`validate_hotkey` in `hotkey_pynput.py`.
 - Tests: `tests/` (`test_*.py`, uses `unittest`).
 - Docs: `docs/` (`usage.md`, `design.md`).
 - Packaging: `pyproject.toml` (entrypoint `presstalk = presstalk.cli:main`).
@@ -11,6 +12,7 @@
 - Install (editable): `uv pip install -e .`
 - Run CLI (simulated): `uv run presstalk simulate --chunks hello world --delay-ms 40`
 - Run CLI (local): `uv run presstalk run` (global hotkey by default)
+- Default hotkey: `shift+space` (combos allowed; e.g., `--hotkey ctrl+shift+x`).
 - Use YAML config: `uv run presstalk run --config ./presstalk.yaml`
 - Tests: `uv run python -m unittest -v` (discovers `tests/test_*.py`).
 
@@ -24,6 +26,7 @@
 - Framework: standard library `unittest`.
 - Naming: place tests in `tests/` as `test_<module>.py`, classes `Test<Thing>`.
 - Coverage: prioritize core modules (`controller`, `orchestrator`, `capture`, `engine/*`). Add fast, deterministic tests; avoid device/network in unit tests.
+- Hotkey combos covered in `tests/test_hotkey_combo.py`; unit tests avoid device hooks/pynput OS-level listeners.
 - Run a focused file: `uv run python -m unittest tests/test_controller.py -v`.
 
 ## Commit & Pull Request Guidelines
@@ -35,3 +38,7 @@
 ## Security & Configuration Tips
 - macOS permissions required: Microphone and Accessibility (for paste/hotkey). See `docs/usage.md`.
 - Configuration: YAML at repository root (`presstalk.yaml`) is auto-used for editable installs; CLI `--config` overrides; env vars still supported (`PT_LANGUAGE`, etc.).
+- Linux/Wayland may restrict global hotkeys; see limitations and guidance in `docs/knowledge/report-hotkey.md`.
+
+## References
+- ADR: `docs/adr/ADR-001-default-hotkey-change.md` (default hotkey changed to `shift+space`).

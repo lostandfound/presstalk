@@ -11,7 +11,13 @@ class SoundDeviceSource:
     - Buffers data in a thread-safe deque for PCMCapture.read to consume.
     """
 
-    def __init__(self, *, sample_rate: int = 16000, channels: int = 1, frames_per_block: int = 320) -> None:
+    def __init__(
+        self,
+        *,
+        sample_rate: int = 16000,
+        channels: int = 1,
+        frames_per_block: int = 320,
+    ) -> None:
         self.sample_rate = int(sample_rate)
         self.channels = int(channels)
         self.frames_per_block = int(frames_per_block)
@@ -42,7 +48,7 @@ class SoundDeviceSource:
         self._stream = sd.InputStream(
             samplerate=self.sample_rate,
             channels=self.channels,
-            dtype='int16',
+            dtype="int16",
             blocksize=self.frames_per_block,
             callback=_cb,
         )
@@ -64,4 +70,3 @@ class SoundDeviceSource:
                 self._stream.close()
             finally:
                 self._stream = None
-
