@@ -47,7 +47,7 @@ class FakeCapture:
 
 
 class TestAudioFeedback(unittest.TestCase):
-    def test_beep_on_press_and_release_when_enabled(self):
+    def test_beep_on_press_and_finalize_when_enabled(self):
         beeps = []
 
         def _beep():
@@ -100,7 +100,7 @@ class TestAudioFeedback(unittest.TestCase):
         text = orch.release()
         self.assertEqual(text, "ok")
 
-    def test_stop_beep_happens_before_finalize(self):
+    def test_finalize_beep_happens_after_paste(self):
         calls = []
 
         class Ctrl:
@@ -116,7 +116,6 @@ class TestAudioFeedback(unittest.TestCase):
 
             def release(self) -> str:
                 import time
-
                 time.sleep(0.02)
                 calls.append("release_done")
                 return "ok"
@@ -124,21 +123,25 @@ class TestAudioFeedback(unittest.TestCase):
         def _beep():
             calls.append("beep")
 
+        def _paste(text: str) -> bool:
+            calls.append("pasted")
+            return True
+
         orch = Orchestrator(
             controller=Ctrl(),
             ring=FakeRing(),
             capture=FakeCapture(),
-            paste_fn=lambda t: True,
+            paste_fn=_paste,
             audio_feedback=True,
             beep_fn=_beep,
         )
         orch.press()
         orch.release()
-        # Expect two beeps total; second beep should appear before finalize marker
-        self.assertGreaterEqual(calls.count("beep"), 1)
+        # Expect two beeps total; finalize beep should appear after paste (text output complete)
         self.assertIn("release_done", calls)
-        # Ensure ordering: a 'beep' exists before 'release_done'
-        self.assertLess(calls.index("beep", 1) if calls.count("beep") > 1 else calls.index("beep"), calls.index("release_done"))
+        self.assertEqual(calls.count("beep"), 2)
+        self.assertIn("pasted", calls)
+        self.assertGreater(calls.index("beep", 1), calls.index("pasted"))
 
 
 if __name__ == "__main__":
