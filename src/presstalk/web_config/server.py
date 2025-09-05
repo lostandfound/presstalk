@@ -70,6 +70,14 @@ class _Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802 - stdlib signature
+        if self.path.startswith("/api/beep"):
+            try:
+                from ..beep import beep as system_beep
+                system_beep()
+            except Exception:
+                pass
+            self._send_json({"ok": True})
+            return
         if self.path.startswith("/api/config"):
             payload, err = self._read_json()
             if err:

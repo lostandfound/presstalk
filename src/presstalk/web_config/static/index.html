@@ -12,8 +12,12 @@
       <form id="cfg-form" aria-describedby="help">
         <div class="field">
           <label for="hotkey">Hotkey</label>
-          <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help" />
-          <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space</div>
+          <div style="display:flex; gap:.5rem; align-items:center;">
+            <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help" />
+            <button id="test-hotkey" type="button" aria-describedby="hotkey-help">Test</button>
+            <button id="beep" type="button">Beep</button>
+          </div>
+          <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space. Use Test to capture keys.</div>
         </div>
 
         <div class="field">
@@ -60,4 +64,3 @@
     <script src="/script.js"></script>
   </body>
   </html>
-

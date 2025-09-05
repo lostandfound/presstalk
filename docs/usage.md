@@ -26,7 +26,21 @@ Then rerun the install command.
 - Microphone: allow on first capture.
 - Accessibility: enable your terminal app for global hotkeys and paste.
 
-## 4) Configuration (YAML)
+## 4) Configuration
+
+### Interactive (CLI)
+```bash
+uv run presstalk config
+uv run presstalk config --show  # read-only
+```
+
+### Web (experimental)
+```bash
+uv run presstalk config --web            # opens http://127.0.0.1:8765
+uv run presstalk config --web --port 9000
+```
+
+### YAML
 - Auto-discovery: `presstalk.yaml` in the repository root (editable installs).
 - Override path: `uv run presstalk run --config path/to/config.yaml`
 - Example

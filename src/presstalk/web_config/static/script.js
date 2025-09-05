@@ -35,10 +35,57 @@ function status(msg, ok = true) {
   el.style.color = ok ? 'inherit' : 'crimson';
 }
 
+async function beepPreview() {
+  try {
+    const res = await fetch('/api/beep', { method: 'POST' });
+    const j = await res.json();
+    if (!j.ok) throw new Error('beep failed');
+  } catch {}
+}
+
+function startHotkeyTest() {
+  status('Testing... press keys (Esc to exit).');
+  function buildCombo(e) {
+    const parts = [];
+    if (e.metaKey) parts.push('cmd');
+    if (e.ctrlKey) parts.push('ctrl');
+    if (e.altKey) parts.push('alt');
+    if (e.shiftKey) parts.push('shift');
+    let k = e.key || '';
+    if (k === ' ') k = 'space';
+    k = (k || '').toLowerCase();
+    // ignore modifiers if they are the only key and already captured
+    if (!['shift','control','alt','meta'].includes(k)) {
+      parts.push(k);
+    }
+    return parts.join('+');
+  }
+  function onKeyDown(e) {
+    if (e.key === 'Escape') {
+      stop();
+      return;
+    }
+    const combo = buildCombo(e);
+    if (combo) {
+      const inp = document.getElementById('hotkey');
+      inp.value = combo;
+      status('Captured: ' + combo);
+      e.preventDefault();
+    }
+  }
+  function stop() {
+    window.removeEventListener('keydown', onKeyDown, true);
+    status('');
+  }
+  window.addEventListener('keydown', onKeyDown, true);
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('cfg-form');
   const saveBtn = document.getElementById('save');
   const resetBtn = document.getElementById('reset');
+  const testBtn = document.getElementById('test-hotkey');
+  const beepBtn = document.getElementById('beep');
   try {
     const cfg = await fetchConfig();
     fillForm(cfg);
@@ -68,6 +115,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       if (saveBtn) saveBtn.disabled = false;
     }
   });
+  if (testBtn) testBtn.addEventListener('click', startHotkeyTest);
+  if (beepBtn) beepBtn.addEventListener('click', beepPreview);
   resetBtn.addEventListener('click', async () => {
     try {
       const cfg = await fetchConfig();
