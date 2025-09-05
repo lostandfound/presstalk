@@ -70,33 +70,7 @@ async function validateHotkeyLive(value) {
   } catch {}
 }
 
-let _hkTimer = null;
-async function validateHotkeyLive(value) {
-  const err = document.getElementById('hotkey-error');
-  if (!err) return;
-  if (!value) {
-    err.textContent = '';
-    err.classList.remove('error');
-    return;
-  }
-  try {
-    const res = await fetch('/api/validate/hotkey', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ hotkey: value }),
-    });
-    const j = await res.json();
-    if (j && j.ok) {
-      if (j.valid) {
-        err.textContent = 'OK: ' + (j.normalized || value);
-        err.classList.remove('error');
-      } else {
-        err.textContent = 'Invalid hotkey';
-        err.classList.add('error');
-      }
-    }
-  } catch {}
-}
+/* removed duplicate validateHotkeyLive */
 
 async function beepPreview() {
   try {
@@ -106,8 +80,6 @@ async function beepPreview() {
   } catch {}
 }
 
-let _hkTesting = false;
-let _hkHandler = null;
 let _hkTesting = false;
 let _hkHandler = null;
 function startHotkeyTest() {
