@@ -13,6 +13,7 @@ from .beep import beep as system_beep
 from .paste import insert_text
 from .hotkey import HotkeyHandler
 from .engine.dummy_engine import DummyAsrEngine
+from .constants import MODEL_CHOICES
 from .logger import get_logger, QUIET, INFO, DEBUG
 from .logo import print_logo
 
@@ -214,6 +215,10 @@ def build_parser() -> argparse.ArgumentParser:
     cfgp.add_argument(
         "--show", action="store_true", help="Show current config and exit"
     )
+    cfgp.add_argument(
+        "--web", action="store_true", help="Open web-based configuration UI (localhost)"
+    )
+    cfgp.add_argument("--port", type=int, default=8765, help="Port for --web (default: 8765)")
     return parser
 
 
@@ -431,6 +436,22 @@ def _write_yaml_preserve_comments(path: str, data: dict) -> None:
 
 
 def _run_config(args) -> int:
+    # Web-based UI
+    if getattr(args, "web", False):
+        try:
+            from .web_config.server import serve_web_config
+        except Exception as e:
+            print(f"Web config unavailable: {e}")
+            return 1
+        try:
+            serve_web_config(
+                port=int(getattr(args, "port", 8765) or 8765),
+                open_browser=True,
+                config_path=getattr(args, "config", None),
+            )
+        except KeyboardInterrupt:
+            pass
+        return 0
     cfg_path = _find_repo_config(getattr(args, "config", None))
     cfg = Config(config_path=cfg_path)
     show_logo = bool(getattr(cfg, "show_logo", True))
@@ -693,7 +714,7 @@ def _run_config(args) -> int:
 
     def edit_model() -> None:
         cur_model = cfg.model or "small"
-        options = ["tiny", "base", "small", "medium", "large"]
+        options = list(MODEL_CHOICES)
         # TTY: arrow selection; non-TTY: fallback to line input
         if sys.stdin.isatty():
             # simple screen clear
@@ -787,7 +808,7 @@ def _run_config(args) -> int:
         else:
             allowed = set(options)
             esc, m = _read_line_with_esc(
-                f"Model (tiny/base/small/medium/large) [{cur_model}] (ESC to cancel, Enter to keep): "
+                f"Model ({'/'.join(options)}) [{cur_model}] (ESC to cancel, Enter to keep): "
             )
             m = m.strip().lower()
             if esc or m == "esc":
