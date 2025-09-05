@@ -40,7 +40,7 @@ channels: 1
 prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold
-hotkey: ctrl
+hotkey: ctrl+space
 paste_guard: true
 paste_blocklist:
   - Terminal
@@ -62,7 +62,7 @@ uv run presstalk simulate --chunks hello world --delay-ms 40
 ```bash
 uv run presstalk run
 ```
-- 期待: ホットキー（既定 `ctrl`）を押している間だけ録音、離すと確定→貼り付け。
+- 期待: ホットキー（既定 `ctrl+space`）を押している間だけ録音、離すと確定→貼り付け。
 - `--mode toggle` や `--hotkey cmd` などは YAML または CLI で変更可。
 - コンソールモード（代替）:
   - `uv run presstalk run --console`

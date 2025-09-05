@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - TBD
+
+### Breaking
+- Default hotkey changed from `ctrl` to `ctrl+space` to avoid screen reader conflicts and improve accessibility. See docs/MIGRATION_v1.0.0.md for guidance.
+
+### Added
+- Interactive configuration: `presstalk config` with read/write and show-only modes
+- Web-based configuration: `presstalk config --web` (local UI at http://127.0.0.1:8765)
+- Audio feedback: system beeps for recording start/stop (configurable)
+
+### Changed
+- Documentation updated for new default hotkey and configuration workflows
+
 ## [0.1.2] - 2025-09-02
 
 ### Added
@@ -124,7 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS only (Windows support planned for v0.0.3)
 - Requires Microphone and Accessibility permissions on first run
 
-[Unreleased]: https://github.com/lostandfound/presstalk/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/lostandfound/presstalk/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/lostandfound/presstalk/compare/v0.1.2...v1.0.0
 [0.1.2]: https://github.com/lostandfound/presstalk/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/lostandfound/presstalk/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/lostandfound/presstalk/compare/v0.1.0-beta.1...v0.1.0

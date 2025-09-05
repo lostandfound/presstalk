@@ -52,7 +52,7 @@ channels: 1
 prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold       # hold or toggle
-hotkey: ctrl     # ctrl/cmd/alt/space or key
+hotkey: ctrl+space     # examples: ctrl+space, cmd+space, ctrl+shift+x
 paste_guard: true
 paste_blocklist:
   - Terminal
@@ -73,7 +73,7 @@ Expect: a final line like `FINAL: bytes=...`.
 ```bash
 uv run presstalk run
 ```
-Press the hotkey (default `ctrl`) to record; release to finalize and paste.
+Press the hotkey (default `ctrl+space`) to record; release to finalize and paste.
 
 - Console mode (alternative):
 ```bash

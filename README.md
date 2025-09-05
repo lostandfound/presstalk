@@ -5,7 +5,7 @@
 
 Language: [English](README.md) | [日本語](README-ja.md)
 
-Local voice input tool using push‑to‑talk (PTT). Hold a control key to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your machine (no server). macOS, Windows, and Linux are supported.
+Local voice input tool using push‑to‑talk (PTT). Hold the hotkey to record; release to insert transcribed text at the cursor in the frontmost app. Runs entirely on your machine (no server). macOS, Windows, and Linux are supported.
 
 - Architecture: docs/architecture.md
 - Roadmap: docs/ROADMAP.md
@@ -33,11 +33,11 @@ uv run presstalk --console
 ```
 Notes:
 - macOS prompts for Microphone + Accessibility on first run.
-- Hold the key (default `ctrl`) to record; release to paste.
+- Hold the key (default `ctrl+space`) to record; release to paste.
 
 ## What It Does
 - Voice input for any text field: record while holding a key, paste on release.
-- Global hotkey by default (`ctrl`), configurable via YAML or CLI.
+- Global hotkey by default (`ctrl+space`), configurable via YAML or CLI.
 - Offline ASR with faster‑whisper; audio never leaves your device.
 - Paste guard avoids Terminal/iTerm by default; customize via YAML.
 
@@ -62,7 +62,7 @@ channels: 1
 prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold      # hold or toggle
-hotkey: ctrl    # ctrl/cmd/alt/space or key
+hotkey: ctrl+space    # examples: ctrl+space, cmd+space, ctrl+shift+x
 paste_guard: true
 paste_blocklist:
   - Terminal
@@ -70,6 +70,11 @@ paste_blocklist:
   - com.apple.Terminal
   - com.googlecode.iterm2
 ```
+
+### Migration Notice (v1.0.0)
+
+- Default hotkey changed from `ctrl` to `ctrl+space` for accessibility and to reduce conflicts with screen readers.
+- See docs/MIGRATION_v1.0.0.md for step-by-step guidance.
 
 ### Console Input mode (optional)
 
