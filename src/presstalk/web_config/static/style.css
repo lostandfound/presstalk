@@ -11,3 +11,8 @@ h1 { font-size: 1.6rem; margin-bottom: 1rem; }
 button { padding: 0.5rem 0.9rem; font-size: 1rem; }
 #status { margin-top: 0.75rem; min-height: 1.2rem; }
 
+/* Focus visibility for keyboard navigation */
+input:focus, select:focus, button:focus {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}

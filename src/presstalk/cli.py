@@ -13,6 +13,7 @@ from .beep import beep as system_beep
 from .paste import insert_text
 from .hotkey import HotkeyHandler
 from .engine.dummy_engine import DummyAsrEngine
+from .constants import MODEL_CHOICES
 from .logger import get_logger, QUIET, INFO, DEBUG
 from .logo import print_logo
 
@@ -713,7 +714,7 @@ def _run_config(args) -> int:
 
     def edit_model() -> None:
         cur_model = cfg.model or "small"
-        options = ["tiny", "base", "small", "medium", "large"]
+        options = list(MODEL_CHOICES)
         # TTY: arrow selection; non-TTY: fallback to line input
         if sys.stdin.isatty():
             # simple screen clear
@@ -807,7 +808,7 @@ def _run_config(args) -> int:
         else:
             allowed = set(options)
             esc, m = _read_line_with_esc(
-                f"Model (tiny/base/small/medium/large) [{cur_model}] (ESC to cancel, Enter to keep): "
+                f"Model ({'/'.join(options)}) [{cur_model}] (ESC to cancel, Enter to keep): "
             )
             m = m.strip().lower()
             if esc or m == "esc":

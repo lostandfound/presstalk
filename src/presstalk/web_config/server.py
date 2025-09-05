@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from ..config import Config
+from ..constants import MODEL_CHOICES
 
 
 def _repo_root() -> Path:
@@ -43,6 +44,10 @@ class _Handler(SimpleHTTPRequestHandler):
             length = int(self.headers.get("Content-Length", "0"))
         except Exception:
             length = 0
+        # Enforce a small request size limit (8 KiB)
+        max_len = 8192
+        if length > max_len:
+            return {}, "request too large"
         raw = self.rfile.read(length) if length > 0 else b""
         try:
             obj = json.loads(raw.decode("utf-8") or "{}")
@@ -86,7 +91,7 @@ class _Handler(SimpleHTTPRequestHandler):
                 cfg.language = payload["language"].strip() or cfg.language
             if "model" in payload and isinstance(payload["model"], str):
                 m = payload["model"].strip().lower()
-                if m in {"tiny", "base", "small", "medium", "large"}:
+                if m in set(MODEL_CHOICES):
                     cfg.model = m
             if "hotkey" in payload and isinstance(payload["hotkey"], str):
                 hk = normalize_hotkey(payload["hotkey"])  # type: ignore[arg-type]
