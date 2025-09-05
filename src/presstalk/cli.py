@@ -214,6 +214,10 @@ def build_parser() -> argparse.ArgumentParser:
     cfgp.add_argument(
         "--show", action="store_true", help="Show current config and exit"
     )
+    cfgp.add_argument(
+        "--web", action="store_true", help="Open web-based configuration UI (localhost)"
+    )
+    cfgp.add_argument("--port", type=int, default=8000, help="Port for --web (default: 8000)")
     return parser
 
 
@@ -431,6 +435,22 @@ def _write_yaml_preserve_comments(path: str, data: dict) -> None:
 
 
 def _run_config(args) -> int:
+    # Web-based UI
+    if getattr(args, "web", False):
+        try:
+            from .web_config.server import serve_web_config
+        except Exception as e:
+            print(f"Web config unavailable: {e}")
+            return 1
+        try:
+            serve_web_config(
+                port=int(getattr(args, "port", 8000) or 8000),
+                open_browser=True,
+                config_path=getattr(args, "config", None),
+            )
+        except KeyboardInterrupt:
+            pass
+        return 0
     cfg_path = _find_repo_config(getattr(args, "config", None))
     cfg = Config(config_path=cfg_path)
     show_logo = bool(getattr(cfg, "show_logo", True))

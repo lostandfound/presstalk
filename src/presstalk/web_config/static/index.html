@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PressTalk Config</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>PressTalk Configuration</h1>
+      <form id="cfg-form" aria-describedby="help">
+        <div class="field">
+          <label for="hotkey">Hotkey</label>
+          <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help" />
+          <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space</div>
+        </div>
+
+        <div class="field">
+          <label for="language">Language</label>
+          <select id="language" name="language">
+            <option value="en">en</option>
+            <option value="ja">ja</option>
+            <option value="es">es</option>
+            <option value="fr">fr</option>
+            <option value="de">de</option>
+            <option value="it">it</option>
+            <option value="pt">pt</option>
+            <option value="zh">zh</option>
+            <option value="ko">ko</option>
+            <option value="hi">hi</option>
+            <option value="ar">ar</option>
+            <option value="ru">ru</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="model">Model</label>
+          <select id="model" name="model">
+            <option value="tiny">tiny</option>
+            <option value="base">base</option>
+            <option value="small">small</option>
+            <option value="medium">medium</option>
+            <option value="large">large</option>
+          </select>
+        </div>
+
+        <div class="field checkbox">
+          <label><input id="audio_feedback" name="audio_feedback" type="checkbox" /> Enable audio feedback</label>
+        </div>
+
+        <div class="actions">
+          <button id="save" type="submit">Save</button>
+          <button id="reset" type="button">Reset</button>
+        </div>
+      </form>
+      <div id="status" role="status" aria-live="polite"></div>
+      <p id="help" class="hint">All changes are saved to your presstalk.yaml locally. No data leaves your machine.</p>
+    </main>
+    <script src="/script.js"></script>
+  </body>
+  </html>
+
