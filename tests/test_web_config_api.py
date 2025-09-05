@@ -147,6 +147,26 @@ class TestWebConfigAPI(unittest.TestCase):
             httpd.server_close()
             os.remove(path)
 
+    def test_validate_hotkey_endpoint(self):
+        path = self._tmp_yaml(
+            "language: ja\nmodel: small\nhotkey: ctrl+space\naudio_feedback: true\n"
+        )
+        httpd, port, _t = _start_server(path)
+        try:
+            c = self._conn(port)
+            body = json.dumps({"hotkey": "ctrl+shift+x"}).encode("utf-8")
+            c.request("POST", "/api/validate/hotkey", body=body, headers={"Content-Type": "application/json"})
+            r = c.getresponse()
+            self.assertEqual(r.status, 200)
+            j = json.loads(r.read().decode("utf-8"))
+            self.assertTrue(j.get("ok"))
+            self.assertTrue(j.get("valid"))
+            self.assertEqual(j.get("normalized"), "ctrl+shift+x")
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+            os.remove(path)
+
 
 if __name__ == "__main__":
     unittest.main()

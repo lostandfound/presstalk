@@ -35,6 +35,34 @@ function status(msg, ok = true) {
   el.style.color = ok ? 'inherit' : 'crimson';
 }
 
+let _hkTimer = null;
+async function validateHotkeyLive(value) {
+  const err = document.getElementById('hotkey-error');
+  if (!err) return;
+  if (!value) {
+    err.textContent = '';
+    err.classList.remove('error');
+    return;
+  }
+  try {
+    const res = await fetch('/api/validate/hotkey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hotkey: value }),
+    });
+    const j = await res.json();
+    if (j && j.ok) {
+      if (j.valid) {
+        err.textContent = 'OK: ' + (j.normalized || value);
+        err.classList.remove('error');
+      } else {
+        err.textContent = 'Invalid hotkey';
+        err.classList.add('error');
+      }
+    }
+  } catch {}
+}
+
 async function beepPreview() {
   try {
     const res = await fetch('/api/beep', { method: 'POST' });
@@ -86,6 +114,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const resetBtn = document.getElementById('reset');
   const testBtn = document.getElementById('test-hotkey');
   const beepBtn = document.getElementById('beep');
+  const hotkeyInput = document.getElementById('hotkey');
   try {
     const cfg = await fetchConfig();
     fillForm(cfg);
@@ -117,6 +146,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   if (testBtn) testBtn.addEventListener('click', startHotkeyTest);
   if (beepBtn) beepBtn.addEventListener('click', beepPreview);
+  if (hotkeyInput) hotkeyInput.addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    if (_hkTimer) window.clearTimeout(_hkTimer);
+    _hkTimer = window.setTimeout(() => validateHotkeyLive(val), 150);
+  });
   resetBtn.addEventListener('click', async () => {
     try {
       const cfg = await fetchConfig();

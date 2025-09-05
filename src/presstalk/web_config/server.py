@@ -70,6 +70,26 @@ class _Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802 - stdlib signature
+        if self.path.startswith("/api/validate/hotkey"):
+            payload, err = self._read_json()
+            if err:
+                self._send_json({"ok": False, "error": err}, status=400)
+                return
+            try:
+                from ..hotkey_pynput import normalize_hotkey, validate_hotkey
+            except Exception:
+                def normalize_hotkey(x):  # type: ignore
+                    return x
+                def validate_hotkey(x):  # type: ignore
+                    return bool(x)
+            raw = payload.get("hotkey", "") if isinstance(payload, dict) else ""
+            if not isinstance(raw, str):
+                self._send_json({"ok": True, "valid": False, "normalized": ""})
+                return
+            norm = normalize_hotkey(raw)
+            valid = validate_hotkey(norm)
+            self._send_json({"ok": True, "valid": bool(valid), "normalized": norm})
+            return
         if self.path.startswith("/api/beep"):
             try:
                 from ..beep import beep as system_beep
