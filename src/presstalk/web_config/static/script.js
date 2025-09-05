@@ -38,6 +38,41 @@ function status(msg, ok = true) {
 let _hkTimer = null;
 async function validateHotkeyLive(value) {
   const err = document.getElementById('hotkey-error');
+  const input = document.getElementById('hotkey');
+  if (!err) return;
+  if (!value) {
+    err.textContent = '';
+    err.classList.remove('error');
+    if (input) input.setAttribute('aria-invalid', 'false');
+    err.setAttribute('role', 'status');
+    return;
+  }
+  try {
+    const res = await fetch('/api/validate/hotkey', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hotkey: value }),
+    });
+    const j = await res.json();
+    if (j && j.ok) {
+      if (j.valid) {
+        err.textContent = 'OK: ' + (j.normalized || value);
+        err.classList.remove('error');
+        if (input) input.setAttribute('aria-invalid', 'false');
+        err.setAttribute('role', 'status');
+      } else {
+        err.textContent = 'Invalid hotkey';
+        err.classList.add('error');
+        if (input) input.setAttribute('aria-invalid', 'true');
+        err.setAttribute('role', 'alert');
+      }
+    }
+  } catch {}
+}
+
+let _hkTimer = null;
+async function validateHotkeyLive(value) {
+  const err = document.getElementById('hotkey-error');
   if (!err) return;
   if (!value) {
     err.textContent = '';
@@ -71,8 +106,21 @@ async function beepPreview() {
   } catch {}
 }
 
+let _hkTesting = false;
+let _hkHandler = null;
+let _hkTesting = false;
+let _hkHandler = null;
 function startHotkeyTest() {
-  status('Testing... press keys (Esc to exit).');
+  if (_hkTesting) return;
+  _hkTesting = true;
+  const stopBtn = document.getElementById('stop-hotkey');
+  const testBtn = document.getElementById('test-hotkey');
+  const saveBtn = document.getElementById('save');
+  if (stopBtn) stopBtn.classList.remove('hidden');
+  if (testBtn) testBtn.disabled = true;
+  if (testBtn) testBtn.setAttribute('aria-pressed', 'true');
+  if (saveBtn) saveBtn.disabled = true;
+  status('Testing... Press your key combo. Press Esc or Stop to exit.');
   function buildCombo(e) {
     const parts = [];
     if (e.metaKey) parts.push('cmd');
@@ -90,7 +138,7 @@ function startHotkeyTest() {
   }
   function onKeyDown(e) {
     if (e.key === 'Escape') {
-      stop();
+      stopHotkeyTest();
       return;
     }
     const combo = buildCombo(e);
@@ -99,13 +147,30 @@ function startHotkeyTest() {
       inp.value = combo;
       status('Captured: ' + combo);
       e.preventDefault();
+      // trigger live validation display
+      validateHotkeyLive(combo);
     }
   }
-  function stop() {
-    window.removeEventListener('keydown', onKeyDown, true);
-    status('');
+  _hkHandler = onKeyDown;
+  window.addEventListener('keydown', _hkHandler, true);
+}
+
+function stopHotkeyTest() {
+  if (!_hkTesting) return;
+  _hkTesting = false;
+  if (_hkHandler) {
+    window.removeEventListener('keydown', _hkHandler, true);
+    _hkHandler = null;
   }
-  window.addEventListener('keydown', onKeyDown, true);
+  const stopBtn = document.getElementById('stop-hotkey');
+  const testBtn = document.getElementById('test-hotkey');
+  const saveBtn = document.getElementById('save');
+  if (stopBtn) stopBtn.classList.add('hidden');
+  if (testBtn) testBtn.disabled = false;
+  if (testBtn) testBtn.setAttribute('aria-pressed', 'false');
+  if (saveBtn) saveBtn.disabled = false;
+  status('Hotkey capture stopped');
+  setTimeout(() => status(''), 1000);
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -114,6 +179,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   const resetBtn = document.getElementById('reset');
   const testBtn = document.getElementById('test-hotkey');
   const beepBtn = document.getElementById('beep');
+  const stopBtn = document.getElementById('stop-hotkey');
   const hotkeyInput = document.getElementById('hotkey');
   try {
     const cfg = await fetchConfig();
@@ -129,6 +195,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       status('Hotkey cannot be empty', false);
       return;
     }
+    form.setAttribute('aria-busy', 'true');
     status('Saving...');
     if (saveBtn) saveBtn.disabled = true;
     try {
@@ -141,10 +208,12 @@ window.addEventListener('DOMContentLoaded', async () => {
     } catch (e) {
       status('Save failed', false);
     } finally {
+      form.setAttribute('aria-busy', 'false');
       if (saveBtn) saveBtn.disabled = false;
     }
   });
   if (testBtn) testBtn.addEventListener('click', startHotkeyTest);
+  if (stopBtn) stopBtn.addEventListener('click', stopHotkeyTest);
   if (beepBtn) beepBtn.addEventListener('click', beepPreview);
   if (hotkeyInput) hotkeyInput.addEventListener('input', (e) => {
     const val = e.target.value.trim();
@@ -156,6 +225,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       const cfg = await fetchConfig();
       fillForm(cfg);
       status('Reset to current values');
+      // clear any previous error displays
+      validateHotkeyLive(document.getElementById('hotkey').value.trim());
     } catch (e) {
       status('Failed to reload configuration', false);
     }

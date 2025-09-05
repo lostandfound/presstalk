@@ -13,12 +13,13 @@
         <div class="field">
           <label for="hotkey">Hotkey</label>
           <div style="display:flex; gap:.5rem; align-items:center;">
-            <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help" />
+            <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help hotkey-error" aria-invalid="false" />
             <button id="test-hotkey" type="button" aria-describedby="hotkey-help">Test</button>
+            <button id="stop-hotkey" type="button" class="hidden">Stop</button>
             <button id="beep" type="button">Beep</button>
           </div>
           <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space. Use Test to capture keys.</div>
-          <div id="hotkey-error" class="hint" role="status" aria-live="polite"></div>
+          <div id="hotkey-error" class="hint" role="status" aria-live="polite" aria-atomic="true"></div>
         </div>
 
         <div class="field">

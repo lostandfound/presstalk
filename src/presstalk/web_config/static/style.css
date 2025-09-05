@@ -8,6 +8,7 @@ h1 { font-size: 1.6rem; margin-bottom: 1rem; }
 .field.checkbox label { font-weight: 400; }
 .hint { color: #777; font-size: 0.9rem; }
 .hint.error { color: crimson; }
+.hidden { display: none; }
 .actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
 button { padding: 0.5rem 0.9rem; font-size: 1rem; }
 #status { margin-top: 0.75rem; min-height: 1.2rem; }
