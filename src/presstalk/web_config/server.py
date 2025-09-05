@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
-import threading
 import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
@@ -76,8 +74,11 @@ class _Handler(SimpleHTTPRequestHandler):
             try:
                 from ..hotkey_pynput import normalize_hotkey, validate_hotkey
             except Exception:
-                normalize_hotkey = lambda x: x  # type: ignore
-                validate_hotkey = lambda x: bool(x)  # type: ignore
+                def normalize_hotkey(x):  # type: ignore
+                    return x
+
+                def validate_hotkey(x):  # type: ignore
+                    return bool(x)
 
             cfg = Config(config_path=self._cfg_path)
             # apply fields if present
@@ -117,7 +118,7 @@ class _Handler(SimpleHTTPRequestHandler):
 
 
 def serve_web_config(
-    *, port: int = 8000, open_browser: bool = True, config_path: Optional[str] = None
+    *, port: int = 8765, open_browser: bool = True, config_path: Optional[str] = None
 ) -> None:
     base = Path(__file__).resolve().parent
     static_dir = base / "static"
@@ -143,4 +144,3 @@ def serve_web_config(
             httpd.server_close()
         except Exception:
             pass
-

@@ -217,7 +217,7 @@ def build_parser() -> argparse.ArgumentParser:
     cfgp.add_argument(
         "--web", action="store_true", help="Open web-based configuration UI (localhost)"
     )
-    cfgp.add_argument("--port", type=int, default=8000, help="Port for --web (default: 8000)")
+    cfgp.add_argument("--port", type=int, default=8765, help="Port for --web (default: 8765)")
     return parser
 
 
@@ -444,7 +444,7 @@ def _run_config(args) -> int:
             return 1
         try:
             serve_web_config(
-                port=int(getattr(args, "port", 8000) or 8000),
+                port=int(getattr(args, "port", 8765) or 8765),
                 open_browser=True,
                 config_path=getattr(args, "config", None),
             )
