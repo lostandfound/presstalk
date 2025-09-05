@@ -32,11 +32,11 @@ uv run presstalk --console
 ```
 Tips:
 - 初回は macOS のマイク/アクセシビリティ許可が必要です。
-- 既定ホットキーは `ctrl`。押して録音、離すとローカルで貼り付け。
+- 既定ホットキーは `ctrl+space`。押して録音、離すとローカルで貼り付け。
 
 ## できること（概要）
 - どのテキスト入力欄でも、キー押下中のみ録音→キーを離すと貼り付け。
-- 既定はグローバルホットキー（`ctrl`）。YAML または CLI で変更可能。
+- 既定はグローバルホットキー（`ctrl+space`）。YAML または CLI で変更可能。
 - faster‑whisper によるオフライン ASR。音声は端末外へ送信しません。
 - ペーストガードで Terminal/iTerm を回避（YAML で調整可能）。
 
@@ -73,7 +73,13 @@ channels: 1
 prebuffer_ms: 200
 min_capture_ms: 1800
 mode: hold       # hold または toggle
-hotkey: ctrl     # ctrl/cmd/alt/space または文字キー
+hotkey: ctrl+space     # 例: ctrl+space, cmd+space, ctrl+shift+x
+```
+
+### マイグレーション通知（v1.0.0）
+
+- 既定ホットキーを `ctrl` から `ctrl+space` に変更しました（アクセシビリティとスクリーンリーダーとの競合回避のため）。
+- 手順は docs/MIGRATION_v1.0.0.md を参照してください。
 paste_guard: true
 paste_blocklist:
   - Terminal
