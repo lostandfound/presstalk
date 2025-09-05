@@ -7,36 +7,24 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <main class="container">
+    <main>
       <h1>PressTalk Configuration</h1>
       <form id="cfg-form" aria-describedby="help">
-        <section class="card">
-          <div class="card-header">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 3h10v2H7zM5 7h14v2H5zM3 11h18v2H3zM5 15h14v2H5zM7 19h10v2H7z"/></svg>
-            <h2>Hotkey</h2>
+        <div class="field">
+          <label for="hotkey">Hotkey</label>
+          <div style="display:flex; gap:.5rem; align-items:center;">
+            <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help hotkey-error" aria-invalid="false" />
+            <button id="test-hotkey" type="button" aria-describedby="hotkey-help">Test</button>
+            <button id="stop-hotkey" type="button" class="hidden">Stop</button>
+            <button id="beep" type="button">Beep</button>
           </div>
-          <div class="field">
-            <label for="hotkey"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h16v6H4zM4 14h10v6H4z"/></svg> Combination</label>
-            <div style="display:flex; gap:.5rem; align-items:center;">
-              <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help hotkey-error" aria-invalid="false" />
-              <button id="test-hotkey" type="button" class="btn btn-ghost" aria-describedby="hotkey-help">Test</button>
-              <button id="stop-hotkey" type="button" class="btn btn-ghost hidden">Stop</button>
-              <button id="beep" type="button" class="btn btn-ghost">Beep</button>
-            </div>
-            <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space. Use Test to capture keys.</div>
-            <div id="hotkey-error" class="hint" role="status" aria-live="polite" aria-atomic="true"></div>
-          </div>
-        </section>
+          <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space. Use Test to capture keys.</div>
+          <div id="hotkey-error" class="hint" role="status" aria-live="polite" aria-atomic="true"></div>
+        </div>
 
-        <section class="card">
-          <div class="card-header">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5h18v2H3zM3 10h12v2H3zM3 15h18v2H3z"/></svg>
-            <h2>General</h2>
-          </div>
-          <div class="grid">
-            <div class="field">
-              <label for="language"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 2a8 8 0 017.75 6H12V4z"/></svg> Language</label>
-              <select id="language" name="language">
+        <div class="field">
+          <label for="language">Language</label>
+          <select id="language" name="language">
             <option value="en">en</option>
             <option value="ja">ja</option>
             <option value="es">es</option>
@@ -49,34 +37,27 @@
             <option value="hi">hi</option>
             <option value="ar">ar</option>
             <option value="ru">ru</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="model"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 7h18v10H3zM5 5h14v2H5zM5 17h14v2H5z"/></svg> Model</label>
-              <select id="model" name="model">
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="model">Model</label>
+          <select id="model" name="model">
             <option value="tiny">tiny</option>
             <option value="base">base</option>
             <option value="small">small</option>
             <option value="medium">medium</option>
             <option value="large">large</option>
-              </select>
-            </div>
-          </div>
-        </section>
+          </select>
+        </div>
 
-        <section class="card">
-          <div class="card-header">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3l9 4-9 4-9-4 9-4zm0 6l9 4-9 4-9-4 9-4zm0 6l9 4-9 4-9-4 9-4z"/></svg>
-            <h2>Audio</h2>
-          </div>
-          <div class="field checkbox">
-            <label><input id="audio_feedback" name="audio_feedback" type="checkbox" /> Enable audio feedback</label>
-          </div>
-        </section>
+        <div class="field checkbox">
+          <label><input id="audio_feedback" name="audio_feedback" type="checkbox" /> Enable audio feedback</label>
+        </div>
 
         <div class="actions">
-          <button id="save" type="submit" class="btn btn-accent">Save</button>
-          <button id="reset" type="button" class="btn">Reset</button>
+          <button id="save" type="submit">Save</button>
+          <button id="reset" type="button">Reset</button>
         </div>
       </form>
       <div id="status" role="status" aria-live="polite"></div>

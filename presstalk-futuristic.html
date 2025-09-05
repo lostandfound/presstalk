@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PressTalk Config</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a1f1b 0%, #0f2922 50%, #1a3a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px;
+            position: relative;
+            overflow: auto;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(72, 255, 176, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(39, 255, 135, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(163, 255, 200, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(1deg); }
+            66% { transform: translate(-20px, 20px) rotate(-1deg); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 36px;
+            background: linear-gradient(135deg, #48ffb0 0%, #0fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(72, 255, 176, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            animation: fadeIn 0.8s ease-out backwards;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(72, 255, 176, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(72, 255, 176, 0.1);
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #48ffb0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            color: #48ffb0;
+            filter: drop-shadow(0 0 10px rgba(72, 255, 176, 0.5));
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+        }
+
+        label .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #48ffb0;
+            box-shadow: 0 0 0 3px rgba(72, 255, 176, 0.1);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px rgba(72, 255, 176, 0.5);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(72, 255, 176, 0.8);
+            }
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(72,255,176,0.5)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 45px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 6px;
+        }
+
+        #hotkey-error {
+            color: #48ffb0;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(72, 255, 176, 0.3);
+            color: #48ffb0;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #48ffb0 0%, #0fa 100%);
+            color: #0a1f1b;
+            border: none;
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(72, 255, 176, 0.3);
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox label {
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            cursor: pointer;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        input[type="checkbox"]:checked {
+            background: linear-gradient(135deg, #48ffb0 0%, #0fa 100%);
+            border-color: transparent;
+        }
+
+        input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #0a1f1b;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+            animation: fadeIn 0.8s ease-out 0.4s backwards;
+        }
+
+        .actions button {
+            flex: 1;
+            padding: 14px 28px;
+            font-size: 15px;
+        }
+
+        #status {
+            margin-top: 24px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(72, 255, 176, 0.1), rgba(0, 255, 170, 0.1));
+            border: 1px solid rgba(72, 255, 176, 0.3);
+            border-radius: 12px;
+            text-align: center;
+            color: #48ffb0;
+            font-weight: 500;
+            display: none;
+            animation: statusPulse 2s ease-in-out;
+        }
+
+        #status.show {
+            display: block;
+        }
+
+        @keyframes statusPulse {
+            0% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        #help {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(72, 255, 176, 0.1);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 32px 24px;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>PressTalk Configuration</h1>
+        <form id="cfg-form" aria-describedby="help">
+            <section class="card">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M7 3h10v2H7zM5 7h14v2H5zM3 11h18v2H3zM5 15h14v2H5zM7 19h10v2H7z"/>
+                    </svg>
+                    <h2>Hotkey</h2>
+                </div>
+                <div class="field">
+                    <label for="hotkey">
+                        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="currentColor" d="M4 4h16v6H4zM4 14h10v6H4z"/>
+                        </svg>
+                        Combination
+                    </label>
+                    <div style="display:flex; gap:.5rem; align-items:center;">
+                        <input id="hotkey" name="hotkey" type="text" aria-describedby="hotkey-help hotkey-error" aria-invalid="false" placeholder="Press keys..." />
+                        <button id="test-hotkey" type="button" class="btn btn-ghost" aria-describedby="hotkey-help">Test</button>
+                        <button id="stop-hotkey" type="button" class="btn btn-ghost hidden">Stop</button>
+                        <button id="beep" type="button" class="btn btn-ghost">Beep</button>
+                    </div>
+                    <div id="hotkey-help" class="hint">Examples: x, space, ctrl, ctrl+shift+space. Use Test to capture keys.</div>
+                    <div id="hotkey-error" class="hint" role="status" aria-live="polite" aria-atomic="true"></div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M3 5h18v2H3zM3 10h12v2H3zM3 15h18v2H3z"/>
+                    </svg>
+                    <h2>General</h2>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="language">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill="currentColor" d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 2a8 8 0 017.75 6H12V4z"/>
+                            </svg>
+                            Language
+                        </label>
+                        <select id="language" name="language">
+                            <option value="en">en</option>
+                            <option value="ja">ja</option>
+                            <option value="es">es</option>
+                            <option value="fr">fr</option>
+                            <option value="de">de</option>
+                            <option value="it">it</option>
+                            <option value="pt">pt</option>
+                            <option value="zh">zh</option>
+                            <option value="ko">ko</option>
+                            <option value="hi">hi</option>
+                            <option value="ar">ar</option>
+                            <option value="ru">ru</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="model">
+                            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill="currentColor" d="M3 7h18v10H3zM5 5h14v2H5zM5 17h14v2H5z"/>
+                            </svg>
+                            Model
+                        </label>
+                        <select id="model" name="model">
+                            <option value="tiny">tiny</option>
+                            <option value="base">base</option>
+                            <option value="small">small</option>
+                            <option value="medium">medium</option>
+                            <option value="large">large</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <div class="card-header">
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M12 3l9 4-9 4-9-4 9-4zm0 6l9 4-9 4-9-4 9-4zm0 6l9 4-9 4-9-4 9-4z"/>
+                    </svg>
+                    <h2>Audio</h2>
+                </div>
+                <div class="field checkbox">
+                    <label>
+                        <input id="audio_feedback" name="audio_feedback" type="checkbox" />
+                        Enable audio feedback
+                    </label>
+                </div>
+            </section>
+
+            <div class="actions">
+                <button id="save" type="submit" class="btn btn-accent">Save</button>
+                <button id="reset" type="button" class="btn">Reset</button>
+            </div>
+        </form>
+        <div id="status" role="status" aria-live="polite"></div>
+        <p id="help" class="hint">All changes are saved to your presstalk.yaml locally. No data leaves your machine.</p>
+    </main>
+    
+    <script>
+        // Form handling
+        const form = document.getElementById('cfg-form');
+        const status = document.getElementById('status');
+        const hotkeyInput = document.getElementById('hotkey');
+        const hotkeyError = document.getElementById('hotkey-error');
+        const testBtn = document.getElementById('test-hotkey');
+        const stopBtn = document.getElementById('stop-hotkey');
+        const beepBtn = document.getElementById('beep');
+        
+        let isCapturing = false;
+        let capturedKeys = [];
+        
+        // Test hotkey capture
+        testBtn.addEventListener('click', () => {
+            isCapturing = true;
+            capturedKeys = [];
+            hotkeyInput.value = '';
+            hotkeyInput.placeholder = 'Press your keys...';
+            testBtn.classList.add('hidden');
+            stopBtn.classList.remove('hidden');
+            hotkeyInput.focus();
+        });
+        
+        stopBtn.addEventListener('click', () => {
+            isCapturing = false;
+            testBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            hotkeyInput.placeholder = 'Press keys...';
+            if (capturedKeys.length > 0) {
+                hotkeyError.textContent = 'OK: ' + capturedKeys.join('+');
+            }
+        });
+        
+        hotkeyInput.addEventListener('keydown', (e) => {
+            if (!isCapturing) return;
+            e.preventDefault();
+            
+            const key = [];
+            if (e.ctrlKey) key.push('ctrl');
+            if (e.shiftKey) key.push('shift');
+            if (e.altKey) key.push('alt');
+            if (e.metaKey) key.push('meta');
+            
+            if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
+                key.push(e.key.toLowerCase());
+            }
+            
+            capturedKeys = key;
+            hotkeyInput.value = key.join('+');
+        });
+        
+        // Beep button
+        beepBtn.addEventListener('click', () => {
+            // Play beep sound
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            gainNode.gain.value = 0.3;
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+        });
+        
+        // Save form
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show success message
+            status.textContent = '✨ Configuration saved successfully!';
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 3000);
+        });
+        
+        // Reset form
+        document.getElementById('reset').addEventListener('click', () => {
+            form.reset();
+            hotkeyInput.value = 'ctrl+shift';
+            hotkeyError.textContent = 'OK: ctrl+shift';
+            status.textContent = 'Configuration reset to defaults';
+            status.classList.add('show');
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+            }, 3000);
+        });
+        
+        // Set default values
+        hotkeyInput.value = 'ctrl+shift';
+        hotkeyError.textContent = 'OK: ctrl+shift';
+        document.getElementById('language').value = 'ja';
+        document.getElementById('model').value = 'small';
+        document.getElementById('audio_feedback').checked = true;
+    </script>
+</body>
+</html>
