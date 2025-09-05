@@ -1,0 +1,4 @@
+language: ja
+model: small
+hotkey: ctrl+shift
+audio_feedback: true
